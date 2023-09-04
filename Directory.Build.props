@@ -1,0 +1,17 @@
+<Project>
+  <PropertyGroup>
+	  <VersionPrefix>1.0.0-alpha</VersionPrefix>
+	  <VersionSuffix></VersionSuffix>
+	  <Authors>Guillermo Galván</Authors>
+	  <LangVersion>11</LangVersion>
+	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+	  <PackageProjectUrl>https://github.com/guillermo-galvan/GSqlQuery</PackageProjectUrl>
+	  <Copyright>Copyright (c) Guillermo Galván</Copyright>
+	  <RepositoryUrl>https://github.com/guillermo-galvan/GSqlQuery</RepositoryUrl>
+	  <!--<PackageIcon></PackageIcon>-->
+	  <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
+	  <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+	  <!--<PackageValidationBaselineVersion>11.0.0</PackageValidationBaselineVersion>-->
+  </PropertyGroup>
+  
+</Project>

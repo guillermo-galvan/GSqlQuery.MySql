@@ -1,0 +1,16 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+	  <TargetFrameworks>netstandard2.0;netstandard2.1;net462;net6.0;net7.0</TargetFrameworks>
+    <Configurations>Debug;Release;</Configurations>
+	<GeneratePackageOnBuild>False</GeneratePackageOnBuild>
+	<VersionPrefix>1.0.0-alpha</VersionPrefix>
+	<Description>Create queries from a class and add execution to MySql database</Description>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="GSqlQuery.Runner" Version="1.0.0-alpha" />
+    <PackageReference Include="MySql.Data" Version="8.1.0" />
+  </ItemGroup>
+
+</Project>
