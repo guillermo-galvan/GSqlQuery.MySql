@@ -17,7 +17,7 @@ namespace GSqlQuery.MySql.BulkCopy
 
         private readonly Queue<FileBulkLoader> _files;
         private readonly string _connectionString;
-        private readonly IStatements _statements;
+        private readonly IFormats _formats;
         private uint _boolCount = 1;
         private bool _localInfileModify = false;
 
@@ -25,10 +25,10 @@ namespace GSqlQuery.MySql.BulkCopy
 
         IDatabaseManagement<MySqlConnection> IExecute<int, MySqlConnection>.DatabaseManagement => throw new NotImplementedException();
 
-        public BulkCopyExecute(string connectionString) : this(connectionString, new MySqlStatements())
+        public BulkCopyExecute(string connectionString) : this(connectionString, new MySqlFormats())
         { }
 
-        public BulkCopyExecute(string connectionString, IStatements statements)
+        public BulkCopyExecute(string connectionString, IFormats formats)
         {
             if (string.IsNullOrWhiteSpace(connectionString))
             {
@@ -47,7 +47,7 @@ namespace GSqlQuery.MySql.BulkCopy
 
             _connectionString = connectionString;
             _files = new Queue<FileBulkLoader>();
-            _statements = statements ?? throw new ArgumentNullException(nameof(statements));
+            _formats = formats ?? throw new ArgumentNullException(nameof(formats));
             DatabaseManagement = new MySqlDatabaseManagement(_connectionString);
         }
 
@@ -213,7 +213,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 sw.Close();
             }
 
-            return new FileBulkLoader(classOption.Table.GetTableName(_statements), path, columns, expressions);
+            return new FileBulkLoader(classOption.Table.GetTableName(_formats), path, columns, expressions);
         }
 
         private void LocalInfileVerify(MySqlConnection connection, bool isValidation = true)

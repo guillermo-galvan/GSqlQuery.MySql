@@ -22,7 +22,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             var text = "SELECT `GSQLQuery`.`test1`.`idTest1`,`GSQLQuery`.`test1`.`Money`,`GSQLQuery`.`test1`.`Nombre`,`GSQLQuery`.`test1`.`GUID`,`GSQLQuery`.`test1`.`URL` FROM `GSQLQuery`.`test1` LIMIT 0,5;";
 
-            var result = Test1.Select(_connectionOptions.Statements).Limit(0, 5).Build();
+            var result = Test1.Select(_connectionOptions.Formats).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -31,7 +31,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_where()
         {
             var text = "SELECT `GSQLQuery`.`test1`.`idTest1`,`GSQLQuery`.`test1`.`Money`,`GSQLQuery`.`test1`.`Nombre`,`GSQLQuery`.`test1`.`GUID`,`GSQLQuery`.`test1`.`URL` FROM `GSQLQuery`.`test1` WHERE `GSQLQuery`.`test1`.`idTest1` IS NOT NULL LIMIT 0,5;";
-            var result = Test1.Select(_connectionOptions.Statements).Where().IsNotNull(x => x.Id).Limit(0, 5).Build();
+            var result = Test1.Select(_connectionOptions.Formats).Where().IsNotNull(x => x.Id).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -41,7 +41,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_orderby()
         {
             var text = "SELECT `GSQLQuery`.`test1`.`idTest1`,`GSQLQuery`.`test1`.`Money`,`GSQLQuery`.`test1`.`Nombre`,`GSQLQuery`.`test1`.`GUID`,`GSQLQuery`.`test1`.`URL` FROM `GSQLQuery`.`test1` ORDER BY `GSQLQuery`.`test1`.`idTest1` ASC LIMIT 0,5;";
-            var result = Test1.Select(_connectionOptions.Statements).OrderBy(x => x.Id, OrderBy.ASC).Limit(0, 5).Build();
+            var result = Test1.Select(_connectionOptions.Formats).OrderBy(x => x.Id, OrderBy.ASC).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }

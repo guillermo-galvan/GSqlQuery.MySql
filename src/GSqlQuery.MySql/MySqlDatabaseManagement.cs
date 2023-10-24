@@ -1,5 +1,4 @@
 ﻿using GSqlQuery.Runner;
-using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Data;
 using System.Threading;
@@ -16,9 +15,6 @@ namespace GSqlQuery.MySql
         public MySqlDatabaseManagement(string connectionString, DatabaseManagementEvents events) : base(connectionString, events)
         { }
 
-        public MySqlDatabaseManagement(string connectionString, DatabaseManagementEvents events, ILogger logger) : base(connectionString, events, logger)
-        { }
-
         public int ExecuteNonQuery(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters)
         {
             return base.ExecuteNonQuery(connection, query, parameters);
@@ -30,13 +26,13 @@ namespace GSqlQuery.MySql
         }
 
         public IEnumerable<T> ExecuteReader<T>(MySqlDatabaseConnection connection, IQuery<T> query, IEnumerable<PropertyOptions> propertyOptions, IEnumerable<IDataParameter> parameters) 
-            where T : class, new()
+            where T : class
         {
-            return base.ExecuteReader<T>(connection, query, propertyOptions, parameters);
+            return base.ExecuteReader(connection, query, propertyOptions, parameters);
         }
 
         public Task<IEnumerable<T>> ExecuteReaderAsync<T>(MySqlDatabaseConnection connection, IQuery<T> query, IEnumerable<PropertyOptions> propertyOptions, IEnumerable<IDataParameter> parameters, CancellationToken cancellationToken = default) 
-            where T : class, new()
+            where T : class
         {
             return base.ExecuteReaderAsync<T>(connection, query, propertyOptions, parameters, cancellationToken);
         }

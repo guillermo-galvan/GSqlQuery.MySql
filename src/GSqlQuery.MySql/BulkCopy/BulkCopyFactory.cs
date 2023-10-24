@@ -7,9 +7,9 @@
             return new BulkCopyExecute(connectionString);
         }
 
-        public static IMySqlBulkCopy Create(string connectionString, IStatements statements)
+        public static IMySqlBulkCopy Create(string connectionString, IFormats formats)
         {
-            return new BulkCopyExecute(connectionString, statements);
+            return new BulkCopyExecute(connectionString, formats);
         }
     }
 }

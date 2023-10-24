@@ -12,8 +12,8 @@ namespace GSqlQuery.MySql
         protected readonly int _start;
         protected readonly int? _length;
 
-        public LimitQueryBuilderBase(IQueryBuilderWithWhere<TSelectQuery, TOptions> queryBuilder, IStatements statements, int start, int? length)
-            : base(statements)
+        public LimitQueryBuilderBase(IQueryBuilderWithWhere<TSelectQuery, TOptions> queryBuilder, IFormats formats, int start, int? length)
+            : base(formats)
         {
             _selectQuery = queryBuilder.Build();
             _start = start;
@@ -21,8 +21,8 @@ namespace GSqlQuery.MySql
             Columns = Enumerable.Empty<PropertyOptions>();
         }
 
-        public LimitQueryBuilderBase(IAndOr<T, TSelectQuery> queryBuilder, IStatements statements, int start, int? length)
-            : base(statements)
+        public LimitQueryBuilderBase(IAndOr<T, TSelectQuery> queryBuilder, IFormats formats, int start, int? length)
+            : base(formats)
         {
             _selectQuery = queryBuilder.Build();
             _start = start;
@@ -30,8 +30,8 @@ namespace GSqlQuery.MySql
             Columns = Enumerable.Empty<PropertyOptions>();
         }
 
-        public LimitQueryBuilderBase(IQueryBuilder<TOrderQuery, TOptions> queryBuilder, IStatements statements, int start, int? length)
-           : base(statements)
+        public LimitQueryBuilderBase(IQueryBuilder<TOrderQuery, TOptions> queryBuilder, IFormats formats, int start, int? length)
+           : base(formats)
         {
             _selectQuery = queryBuilder.Build();
             _start = start;
@@ -48,19 +48,19 @@ namespace GSqlQuery.MySql
 
     }
 
-    internal class LimitQueryBuilder<T> : LimitQueryBuilderBase<T, LimitQuery<T>, IStatements, SelectQuery<T>, OrderByQuery<T>>
+    internal class LimitQueryBuilder<T> : LimitQueryBuilderBase<T, LimitQuery<T>, IFormats, SelectQuery<T>, OrderByQuery<T>>
         where T : class, new()
     {
-        public LimitQueryBuilder(IQueryBuilderWithWhere<SelectQuery<T>, IStatements> queryBuilder, IStatements statements, int start, int? length)
-            : base(queryBuilder, statements, start, length)
+        public LimitQueryBuilder(IQueryBuilderWithWhere<SelectQuery<T>, IFormats> queryBuilder, IFormats formats, int start, int? length)
+            : base(queryBuilder, formats, start, length)
         { }
 
-        public LimitQueryBuilder(IAndOr<T, SelectQuery<T>> queryBuilder, IStatements statements, int start, int? length)
-            : base(queryBuilder, statements, start, length)
+        public LimitQueryBuilder(IAndOr<T, SelectQuery<T>> queryBuilder, IFormats formats, int start, int? length)
+            : base(queryBuilder, formats, start, length)
         { }
 
-        public LimitQueryBuilder(IQueryBuilder<OrderByQuery<T>, IStatements> queryBuilder, IStatements statements, int start, int? length)
-            : base(queryBuilder, statements, start, length)
+        public LimitQueryBuilder(IQueryBuilder<OrderByQuery<T>, IFormats> queryBuilder, IFormats formats, int start, int? length)
+            : base(queryBuilder, formats, start, length)
         { }
 
         public override LimitQuery<T> Build()
@@ -81,21 +81,21 @@ namespace GSqlQuery.MySql
 
         public LimitQueryBuilder(IQueryBuilderWithWhere<SelectQuery<T, TDbConnection>, ConnectionOptions<TDbConnection>> queryBuilder,
             ConnectionOptions<TDbConnection> connectionOptions, int start, int? length)
-            : base(queryBuilder, connectionOptions.Statements, start, length)
+            : base(queryBuilder, connectionOptions.Formats, start, length)
         {
             Options = connectionOptions;
         }
 
         public LimitQueryBuilder(IAndOr<T, SelectQuery<T, TDbConnection>> queryBuilder,
             ConnectionOptions<TDbConnection> connectionOptions, int start, int? length)
-            : base(queryBuilder, connectionOptions.Statements, start, length)
+            : base(queryBuilder, connectionOptions.Formats, start, length)
         {
             Options = connectionOptions;
         }
 
         public LimitQueryBuilder(IQueryBuilder<OrderByQuery<T, TDbConnection>, ConnectionOptions<TDbConnection>> queryBuilder,
             ConnectionOptions<TDbConnection> connectionOptions, int start, int? length)
-            : base(queryBuilder, connectionOptions.Statements, start, length)
+            : base(queryBuilder, connectionOptions.Formats, start, length)
         {
             Options = connectionOptions;
         }

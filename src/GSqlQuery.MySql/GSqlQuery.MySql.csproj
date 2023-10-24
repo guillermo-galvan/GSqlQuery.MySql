@@ -9,7 +9,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="GSqlQuery.Runner" Version="1.0.0-alpha" />
+    <PackageReference Include="GSqlQuery.Runner" Version="1.0.0-alpha1" />
     <PackageReference Include="MySql.Data" Version="8.1.0" />
   </ItemGroup>
 

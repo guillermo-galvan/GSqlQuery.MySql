@@ -1,5 +1,4 @@
-﻿using GSqlQuery.Runner;
-using System.Threading;
+﻿using System.Threading;
 using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
