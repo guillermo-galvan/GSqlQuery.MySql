@@ -1,5 +1,9 @@
 ﻿using MySql.Data.MySqlClient;
+using System.IO;
+using System;
 using System.Threading;
+using System.Linq;
+using MySql.Data.Types;
 
 namespace GSqlQuery.MySql.Test
 {
@@ -19,10 +23,19 @@ namespace GSqlQuery.MySql.Test
                 using (MySqlConnection connection = new MySqlConnection(ConnectionString))
                 {
                     connection.Open();
+                    
+                    var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-schema.sql");
+                    var script = new MySqlScript(connection, File.ReadAllText(path));
+                    script.Execute();
 
+                    path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-data.sql");
+                    script = new MySqlScript(connection, File.ReadAllText(path));
+                    script.Execute();
+
+                    
                     using (var createCommand = connection.CreateCommand())
                     {
-                        createCommand.CommandText =
+                       createCommand.CommandText =
                        @"
                             -- -----------------------------------------------------
                             -- Schema GSQLQuery

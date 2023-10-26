@@ -3,9 +3,11 @@
   <PropertyGroup>
 	<TargetFrameworks>net7.0</TargetFrameworks>
     <IsPackable>false</IsPackable>
+    <UserSecretsId>4ad657b1-330f-44db-9e67-be9abf25a766</UserSecretsId>
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.Configuration.UserSecrets" Version="6.0.1" />
     <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.7.0" />
     <PackageReference Include="xunit" Version="2.5.0" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.5.0">
@@ -23,6 +25,12 @@
   </ItemGroup>
 
   <ItemGroup>
+    <None Update="Data\sakila-data.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Update="Data\sakila-schema.sql">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Update="Data\Test1_10000.csv">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
