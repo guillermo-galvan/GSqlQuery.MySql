@@ -1,6 +1,6 @@
 ﻿using GSqlQuery.MySql.Test.Data.Table;
-using GSqlQuery.Runner.Transforms;
 using GSqlQuery.Runner;
+using GSqlQuery.Runner.Transforms;
 using MySql.Data.MySqlClient;
 using MySql.Data.Types;
 using System;
