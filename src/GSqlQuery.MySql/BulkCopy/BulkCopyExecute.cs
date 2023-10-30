@@ -11,44 +11,14 @@ namespace GSqlQuery.MySql.BulkCopy
 {
     internal class BulkCopyExecute : IMySqlBulkCopyExecute
     {
-        const string ALLOWLOADLOCALINFILE = "ALLOWLOADLOCALINFILE=TRUE";
-        const string ALLOWUSERVARIABLES = "ALLOWUSERVARIABLES=TRUE";
-        const string FieldTerminator = "^";
-
         private readonly Queue<FileBulkLoader> _files;
-        private readonly string _connectionString;
-        private readonly IFormats _formats;
-        private uint _boolCount = 1;
         private bool _localInfileModify = false;
+        private readonly BulkCopyConfiguration _bulkCopyConfiguration;
 
-        public IDatabaseManagement<MySqlDatabaseConnection> DatabaseManagement { get; }
-
-        IDatabaseManagement<MySqlConnection> IExecute<int, MySqlConnection>.DatabaseManagement => throw new NotImplementedException();
-
-        public BulkCopyExecute(string connectionString) : this(connectionString, new MySqlFormats())
-        { }
-
-        public BulkCopyExecute(string connectionString, IFormats formats)
+        public BulkCopyExecute(BulkCopyConfiguration bulkCopyConfiguration)
         {
-            if (string.IsNullOrWhiteSpace(connectionString))
-            {
-                throw new ArgumentNullException(nameof(connectionString));
-            }
-
-            if (!connectionString.ToUpper().Contains(ALLOWLOADLOCALINFILE))
-            {
-                throw new InvalidOperationException("Connection string does not contain AllowLoadLocalInfile=true");
-            }
-
-            if (!connectionString.ToUpper().Contains(ALLOWUSERVARIABLES))
-            {
-                throw new InvalidOperationException("Connection string does not contain AllowUserVariables=true");
-            }
-
-            _connectionString = connectionString;
+            _bulkCopyConfiguration = bulkCopyConfiguration ?? throw new ArgumentNullException(nameof(bulkCopyConfiguration));
             _files = new Queue<FileBulkLoader>();
-            _formats = formats ?? throw new ArgumentNullException(nameof(formats));
-            DatabaseManagement = new MySqlDatabaseManagement(_connectionString);
         }
 
         public IMySqlBulkCopyExecute Copy<T>(IEnumerable<T> values)
@@ -66,7 +36,7 @@ namespace GSqlQuery.MySql.BulkCopy
         {
             int result = 0;
 
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            using (MySqlConnection connection = new MySqlConnection(_bulkCopyConfiguration.ConnectionString))
             {
                 connection.Open();
 
@@ -85,7 +55,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 throw new ArgumentNullException(nameof(connection));
             }
 
-            int result = 0;
+            List<int> result = new List<int>();
 
             try
             {
@@ -93,7 +63,7 @@ namespace GSqlQuery.MySql.BulkCopy
 
                 foreach (var item in _files)
                 {
-                    result += WriteToBulkCopy(connection, item);
+                    result .Add( WriteToBulkCopy(connection, item));
                 }
             }
             finally
@@ -101,14 +71,14 @@ namespace GSqlQuery.MySql.BulkCopy
                 LocalInfileVerify(connection, false);
             }
 
-            return result;
+            return result.Sum();
         }
 
         public async Task<int> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             int result = 0;
 
-            using (MySqlConnection connection = new MySqlConnection(_connectionString))
+            using (MySqlConnection connection = new MySqlConnection(_bulkCopyConfiguration.ConnectionString))
             {
                 await connection.OpenAsync();
 
@@ -158,18 +128,18 @@ namespace GSqlQuery.MySql.BulkCopy
             {
                 if (!property.ColumnAttribute.IsAutoIncrementing)
                 {
-                    if (property.PropertyInfo.PropertyType == typeof(bool) || property.PropertyInfo.PropertyType == typeof(bool?))
+                    var columnsAndExpression = _bulkCopyConfiguration.Events.GetColumnaAndExpression(property);
+
+                    if (string.IsNullOrEmpty(columnsAndExpression.ColumnName))
                     {
-                        var boolName = $"@var{_boolCount++}";
-
-                        columns.Add(boolName);
-
-                        expressions.Add($"{property.ColumnAttribute.Name} = ({boolName} = 'True');");
-
+                        throw new InvalidOperationException("Column name cannot be null");
                     }
-                    else
+
+                    columns.Add(columnsAndExpression.ColumnName);
+
+                    if (!string.IsNullOrEmpty(columnsAndExpression.Expression))
                     {
-                        columns.Add(property.ColumnAttribute.Name);
+                        expressions.Add(columnsAndExpression.Expression);
                     }
                 }
             }
@@ -185,27 +155,10 @@ namespace GSqlQuery.MySql.BulkCopy
                     {
                         if (!property.ColumnAttribute.IsAutoIncrementing)
                         {
-                            object val;
-
-                            if (property.PropertyInfo.PropertyType == typeof(DateTime) || property.PropertyInfo.PropertyType == typeof(DateTime?))
-                            {
-                                DateTime? date = (DateTime?)property.PropertyInfo.GetValue(item);
-                                val = date?.ToString("yyyy-MM-dd HH:mm:ss");
-                            }
-                            else if (property.PropertyInfo.PropertyType == typeof(bool) || property.PropertyInfo.PropertyType == typeof(bool?))
-                            {
-                                bool? data = (bool?)property.PropertyInfo.GetValue(item);
-                                val = data.HasValue ? data.Value ? "True" : "False" : null;
-                            }
-                            else
-                            {
-                                val = property.PropertyInfo.GetValue(item) ?? null;
-                            }
-
-                            fields.Enqueue(val);
+                            fields.Enqueue(_bulkCopyConfiguration.Events.Format(property, property.PropertyInfo.GetValue(item)));
                         }
                     }
-                    sw.Write(string.Join(FieldTerminator, fields));
+                    sw.Write(string.Join(BulkCopyConfiguration.FIELDTERMINATOR, fields));
                     sw.Write(Environment.NewLine);
                 }
 
@@ -213,7 +166,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 sw.Close();
             }
 
-            return new FileBulkLoader(classOption.Table.GetTableName(_formats), path, columns, expressions);
+            return new FileBulkLoader(classOption.Table.GetTableName(_bulkCopyConfiguration.Formats), path, columns, expressions);
         }
 
         private void LocalInfileVerify(MySqlConnection connection, bool isValidation = true)
@@ -249,7 +202,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 Local = true,
                 TableName = fileBulkLoader.TableName,
                 FileName = fileBulkLoader.Path,
-                FieldTerminator = FieldTerminator,
+                FieldTerminator = BulkCopyConfiguration.FIELDTERMINATOR,
                 LineTerminator = Environment.NewLine,
 
             };
