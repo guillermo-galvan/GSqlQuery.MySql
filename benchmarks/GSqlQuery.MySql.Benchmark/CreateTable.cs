@@ -1,8 +1,8 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data;
-using GSqlQuery.Runner;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using System;
-using System.Linq;
+using System.IO;
 
 namespace GSqlQuery.MySql.Benchmark
 {
@@ -15,20 +15,29 @@ namespace GSqlQuery.MySql.Benchmark
             return new MySqlConnectionOptions(ConnectionString);
         }
 
+        internal static MySqlConnectionOptions GetConnectionOptions(ServiceProvider serviceProvider)
+        {
+            return new MySqlConnectionOptions(ConnectionString, new MySqlDatabaseManagementEventsCustom(serviceProvider));
+        }
+
         internal static void Create()
         {
-            var tables = Tables.Select(GetConnectionOptions()).Build().Execute();
-
-            if (tables == null || !tables.Any())
+            using (MySqlConnection connection = new MySqlConnection(ConnectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(ConnectionString))
-                {
-                    connection.Open();
+                connection.Open();
 
-                    using (var createCommand = connection.CreateCommand())
-                    {
-                        createCommand.CommandText =
-                       @"
+                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-schema.sql");
+                var script = new MySqlScript(connection, File.ReadAllText(path));
+                script.Execute();
+
+                path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-data.sql");
+                script = new MySqlScript(connection, File.ReadAllText(path));
+                script.Execute();
+
+                using (var createCommand = connection.CreateCommand())
+                {
+                    createCommand.CommandText =
+                   @"
                             -- -----------------------------------------------------
                             -- Schema GSQLQuery
                             -- -----------------------------------------------------
@@ -63,8 +72,7 @@ namespace GSqlQuery.MySql.Benchmark
                               PRIMARY KEY (`Id`))
                             ENGINE = InnoDB;
                         ";
-                        createCommand.ExecuteNonQuery();
-                    }
+                    createCommand.ExecuteNonQuery();
                 }
             }
         }
