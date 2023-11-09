@@ -7,22 +7,22 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void Create_MySqlConnectionOptions_With_ConnectionString()
         {
-            var SqliteConnectionOptions = new MySqlConnectionOptions(Helper.ConnectionString);
-            Assert.NotNull(SqliteConnectionOptions);
+            var mySqlConnectionOptions = new MySqlConnectionOptions(Helper.ConnectionString);
+            Assert.NotNull(mySqlConnectionOptions);
         }
 
         [Fact]
         public void Create_MySqlConnectionOptions_With_ConnectionString_and_events()
         {
-            var SqliteConnectionOptions = new MySqlConnectionOptions(Helper.ConnectionString, new MySqlDatabaseManagementEvents());
-            Assert.NotNull(SqliteConnectionOptions);
+            var mySqlConnectionOptions = new MySqlConnectionOptions(Helper.ConnectionString, new MySqlDatabaseManagementEvents());
+            Assert.NotNull(mySqlConnectionOptions);
         }
 
         [Fact]
         public void Create_MySqlConnectionOptions_With_formats_and_sqlServerDatabaseManagement()
         {
-            var SqliteConnectionOptions = new MySqlConnectionOptions(new MySqlFormats(), new MySqlDatabaseManagement(Helper.ConnectionString));
-            Assert.NotNull(SqliteConnectionOptions);
+            var mySqlConnectionOptions = new MySqlConnectionOptions(new MySqlFormats(), new MySqlDatabaseManagement(Helper.ConnectionString));
+            Assert.NotNull(mySqlConnectionOptions);
         }
     }
 }

@@ -5,9 +5,9 @@
 	  <Authors>Guillermo Galván</Authors>
 	  <LangVersion>11</LangVersion>
 	  <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
-	  <PackageProjectUrl>https://github.com/guillermo-galvan/GSqlQuery</PackageProjectUrl>
+	  <PackageProjectUrl>https://github.com/guillermo-galvan/GSqlQuery.MySql</PackageProjectUrl>
 	  <Copyright>Copyright (c) Guillermo Galván</Copyright>
-	  <RepositoryUrl>https://github.com/guillermo-galvan/GSqlQuery</RepositoryUrl>
+	  <RepositoryUrl>https://github.com/guillermo-galvan/GSqlQuery.MySql</RepositoryUrl>
 	  <!--<PackageIcon></PackageIcon>-->
 	  <PackageLicenseExpression>Apache-2.0</PackageLicenseExpression>
 	  <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>

@@ -1,5 +1,4 @@
-﻿using GSqlQuery.MySql.Test.Data;
-using GSqlQuery.MySql.Test.Data.Table;
+﻿using GSqlQuery.MySql.Test.Data.Table;
 using System;
 using System.Linq;
 using System.Threading;

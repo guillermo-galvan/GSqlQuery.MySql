@@ -1,5 +1,4 @@
 ﻿using BenchmarkDotNet.Attributes;
-using GSqlQuery.MySql.Benchmark.Data;
 using GSqlQuery.MySql.Benchmark.Data.Table;
 using System;
 using System.Collections.Generic;
@@ -15,7 +14,7 @@ namespace GSqlQuery.MySql.Benchmark.Query
             CreateTable.Create();
             int count = Actor.Select(_connectionOptions, x => x.ActorId).Count().Build().Execute();
             Console.WriteLine("Init Initialize {1} 2 {0}", count, typeof(Actor));
-        }
+        } 
     }
 
     public class Select : SelectBenchmark
