@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
+using GSqlQuery.MySql;
 
 namespace GSqlQuery.MySql.Test.Extensions
 {
@@ -266,7 +267,66 @@ namespace GSqlQuery.MySql.Test.Extensions
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection, token));
                 await Assert.ThrowsAsync<ArgumentNullException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(null, token));
             }
+        }
 
+        [Fact]
+        public async void Limit_executeasync_in_two_Join_with_where()
+        {
+            var result = await Address.Select(_connectionOptions)
+                                      .InnerJoin<City>()
+                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+                                      .Where()
+                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Limit(0,5)
+                                      .Build().ExecuteAsync();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async void Limit_executeasync_in_two__Join()
+        {
+            var result = await Address.Select(_connectionOptions)
+                                      .InnerJoin<City>()
+                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+                                      .Limit(0, 5)
+                                      .Build().ExecuteAsync();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async void Limit_executeasync_in_three_Join_with_where()
+        {
+            var result = await Address.Select(_connectionOptions)
+                                      .InnerJoin<City>()
+                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+                                      .InnerJoin<Store>()
+                                      .Equal(x => x.Table1.AddressId, x => x.Table3.AddressId)
+                                      .Where()
+                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Limit(0, 5)
+                                      .Build().ExecuteAsync();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async void Limit_executeasync_in_three__Join()
+        {
+            var result = await Address.Select(_connectionOptions)
+                                      .InnerJoin<City>()
+                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+                                      .InnerJoin<Store>()
+                                      .Equal(x => x.Table1.AddressId, x => x.Table3.AddressId)
+                                      .Limit(0, 5)
+                                      .Build().ExecuteAsync();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
         }
     }
 }

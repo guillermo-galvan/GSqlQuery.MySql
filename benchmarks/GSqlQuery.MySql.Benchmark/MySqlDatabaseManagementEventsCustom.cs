@@ -46,7 +46,7 @@ namespace GSqlQuery.MySql.Benchmark
             return mySqlParameters;
         }
 
-        public override ITransformTo<T> GetTransformTo<T>(ClassOptions classOptions, IQuery<T> query)
+        public override ITransformTo<T> GetTransformTo<T>(ClassOptions classOptions)
         {
             return typeof(Actor) == typeof(T) ? (ITransformTo<T>)new Data.Transform.Actors() : _serviceProvider.GetService<ITransformTo<T>>();
         }

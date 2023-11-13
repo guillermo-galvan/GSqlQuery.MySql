@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
 {
-    public class LimitQuery<T> : Query<T> where T : class, new()
+    public class LimitQuery<T> : Query<T> where T : class
     {
         internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, IFormats formats) :
             base(text, columns, criteria, formats)
@@ -15,7 +15,7 @@ namespace GSqlQuery.MySql
     }
 
     public class LimitQuery<T, TDbConnection> : LimitQuery<T>, IExecute<IEnumerable<T>, TDbConnection>
-        where T : class, new()
+        where T : class
     {
         public IDatabaseManagement<TDbConnection> DatabaseManagement { get; }
 
