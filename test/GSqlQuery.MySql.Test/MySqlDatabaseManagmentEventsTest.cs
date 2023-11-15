@@ -1,4 +1,4 @@
-﻿using GSqlQuery.MySql.Test.Data;
+﻿using GSqlQuery.MySql.Test.Data.Table;
 using System.Collections.Generic;
 using System.Linq;
 using Xunit;
@@ -11,13 +11,13 @@ namespace GSqlQuery.MySql.Test
 
         public MySqlDatabaseManagementEventsTest()
         {
-            _connectionOptions = new MySqlConnectionOptions(Helper.ConnectionString);
+            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]
         public void GetParameter()
         {
-            var query = Test1.Select(_connectionOptions).Build();
+            var query = Address.Select(_connectionOptions).Build();
 
             Queue<ParameterDetail> parameters = new Queue<ParameterDetail>();
             if (query.Criteria != null)
@@ -31,7 +31,7 @@ namespace GSqlQuery.MySql.Test
                 }
             }
 
-            var result = _connectionOptions.DatabaseManagement.Events.GetParameter<Test1>(parameters);
+            var result = _connectionOptions.DatabaseManagement.Events.GetParameter<Address>(parameters);
             Assert.NotNull(result);
             Assert.Equal(parameters.Count, result.Count());
         }
@@ -39,7 +39,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void OnGetParameter()
         {
-            var query = Test1.Select(_connectionOptions).Build();
+            var query = Film.Select(_connectionOptions).Build();
 
             Queue<ParameterDetail> parameters = new Queue<ParameterDetail>();
             if (query.Criteria != null)
@@ -53,7 +53,7 @@ namespace GSqlQuery.MySql.Test
                 }
             }
 
-            var result = _connectionOptions.DatabaseManagement.Events.OnGetParameter(typeof(Test1), parameters);
+            var result = _connectionOptions.DatabaseManagement.Events.GetParameter<Film>(parameters);
             Assert.NotNull(result);
             Assert.Empty(result);
         }

@@ -1,6 +1,6 @@
 ﻿namespace GSqlQuery.MySql
 {
-    public class MySqlStatements : Statements
+    public class MySqlFormats : DefaultFormats
     {
         public override string Format => "`{0}`";
 

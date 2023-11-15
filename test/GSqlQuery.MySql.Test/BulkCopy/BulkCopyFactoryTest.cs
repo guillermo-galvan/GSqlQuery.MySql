@@ -1,10 +1,8 @@
 ﻿using GSqlQuery.MySql.BulkCopy;
-using GSqlQuery.MySql.Test.Data;
+using GSqlQuery.MySql.Test.Data.Table;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -12,69 +10,48 @@ namespace GSqlQuery.MySql.Test.BulkCopy
 {
     public class BulkCopyFactoryTest
     {
-        private readonly string CONNECTIONSTRING = Helper.ConnectionString + "AllowLoadLocalInfile=true;AllowUserVariables=True;";
+        private readonly string CONNECTIONSTRING = Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;";
 
+        private readonly IEnumerable<Actor> _actors;
+        private readonly IEnumerable<Customer> _customers;
+        private readonly MySqlConnectionOptions _connection;
 
         public BulkCopyFactoryTest()
         {
             Helper.CreateDatatable();
-        }
-
-        private IEnumerable<Test1> GetTest1s()
-        {
-            var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "Test1_10000.csv");
-            Queue<Test1> list = new Queue<Test1>();
-
-            foreach (var item in File.ReadAllLines(path))
-            {
-                string[] columns = item.Split(',');
-                list.Enqueue(new Test1() { Id = Convert.ToInt64(columns[0]), Money = Convert.ToDecimal(columns[1]), Nombre = columns[2], GUID = columns[3], URL = columns[4] });
-            }
-
-            return list;
-        }
-
-        private IEnumerable<Test2> GetTest2s()
-        {
-            var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "Test2_10000.csv");
-            Queue<Test2> list = new Queue<Test2>();
-
-            foreach (var item in File.ReadAllLines(path))
-            {
-                string[] columns = item.Split(',');
-                list.Enqueue(new Test2() { Money = Convert.ToDecimal(columns[0]), IsBool = Convert.ToBoolean(columns[1] == "1"), Time = Convert.ToDateTime(columns[2]) });
-            }
-
-            return list;
+            _connection = new MySqlConnectionOptions(Helper.GetConnectionString());
+            _actors = Actor.Select(_connection).Build().Execute();
+            _customers = Customer.Select(_connection).Build().Execute();
         }
 
         [Fact]
         public void Throw_exeception()
         {
-            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(null));
+            BulkCopyConfiguration bulkCopyConfiguration = null;
+            string connectionString = null;
+
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(bulkCopyConfiguration));
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(connectionString));
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(string.Empty));
-            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.ConnectionString));
-            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.ConnectionString + "AllowLoadLocalInfile=true;"));
-            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(Helper.ConnectionString + "AllowLoadLocalInfile=true;AllowUserVariables=True;", null));
+            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString()));
+            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;"));
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", null)));
         }
 
         [Fact]
         public void Execute()
         {
-            var data = GetTest2s();
-            var data1 = GetTest1s();
+            var beforeActorTotal = Actor.Select(_connection, x => new { x.ActorId}).Count().Build().Execute();
+            var beforeCustomersTotal = Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().Execute();
 
-            var beforeTotal = Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-            var beforeTotal1 = Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
+            var bulkcopy = BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_customers).Copy(_actors).Execute();
 
-            var bulkcopy = BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).Copy(data1).Execute();
+            var actorTotal = Actor.Select(_connection, x => new { x.ActorId }).Count().Build().Execute();
+            var customersTotal = Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().Execute();
 
-            var total = Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-            var total1 = Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-
-            Assert.True(bulkcopy == 20000);
-            Assert.True(total > beforeTotal);
-            Assert.True(total1 > beforeTotal1);
+            Assert.True(bulkcopy > 0);
+            Assert.True(actorTotal > beforeActorTotal);
+            Assert.True(customersTotal > beforeCustomersTotal);
         }
 
         [Fact]
@@ -83,48 +60,41 @@ namespace GSqlQuery.MySql.Test.BulkCopy
             using (MySqlConnection connection = new MySqlConnection(CONNECTIONSTRING))
             {
                 connection.Open();
-                var data = GetTest2s();
-                var data1 = GetTest1s();
+                var beforeActorTotal = Actor.Select(_connection, x => new { x.ActorId }).Count().Build().Execute();
+                var beforeCustomersTotal = Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().Execute();
 
-                var beforeTotal = Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-                var beforeTotal1 = Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
+                var bulkcopy = BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_customers).Copy(_actors).Execute(connection);
 
-                var bulkcopy = BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).Copy(data1).Execute(connection);
-
-                var total = Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-                var total1 = Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString)).Build().Execute().Count();
-
-                Assert.True(bulkcopy == 20000);
-                Assert.True(total > beforeTotal);
-                Assert.True(total1 > beforeTotal1);
+                var actorTotal = Actor.Select(_connection, x => new { x.ActorId }).Count().Build().Execute();
+                var customersTotal = Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().Execute();
                 connection.Close();
+
+                Assert.True(bulkcopy > 0);
+                Assert.True(actorTotal > beforeActorTotal);
+                Assert.True(customersTotal > beforeCustomersTotal);
             }
         }
 
         [Fact]
         public void Execute_with_connection_Throw_exeception()
         {
-            var data = GetTest2s();
-            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).Execute(null));
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_actors).Execute(null));
         }
 
         [Fact]
         public async Task ExecuteAsync()
         {
-            var data = GetTest2s();
-            var data1 = GetTest1s();
+            var beforeActorTotal = await Actor.Select(_connection, x => new { x.ActorId }).Count().Build().ExecuteAsync();
+            var beforeCustomersTotal = await Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().ExecuteAsync();
 
-            var beforeTotal = await Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-            var beforeTotal1 = await Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
+            var bulkcopy = await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_customers).Copy(_actors).ExecuteAsync();
 
-            var bulkcopy = await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).Copy(data1).ExecuteAsync();
+            var actorTotal = await Actor.Select(_connection, x => new { x.ActorId }).Count().Build().ExecuteAsync();
+            var customersTotal = await Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().ExecuteAsync();
 
-            var total = await Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-            var total1 = await Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-
-            Assert.True(bulkcopy == 20000);
-            Assert.True(total > beforeTotal);
-            Assert.True(total1 > beforeTotal1);
+            Assert.True(bulkcopy > 0);
+            Assert.True(actorTotal > beforeActorTotal);
+            Assert.True(customersTotal > beforeCustomersTotal);
         }
 
         [Fact]
@@ -133,29 +103,27 @@ namespace GSqlQuery.MySql.Test.BulkCopy
             using (MySqlConnection connection = new MySqlConnection(CONNECTIONSTRING))
             {
                 await connection.OpenAsync();
-                var data = GetTest2s();
-                var data1 = GetTest1s();
 
-                var beforeTotal = await Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-                var beforeTotal1 = await Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
+                var beforeActorTotal = await Actor.Select(_connection, x => new { x.ActorId }).Count().Build().ExecuteAsync();
+                var beforeCustomersTotal = await Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().ExecuteAsync();
 
-                var bulkcopy = await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).Copy(data1).ExecuteAsync(connection);
+                var bulkcopy = await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_customers).Copy(_actors).ExecuteAsync(connection);
 
-                var total = await Test2.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-                var total1 = await Test1.Select(new MySqlConnectionOptions(Helper.ConnectionString), x => x.Id).Count().Build().ExecuteAsync();
-
-                Assert.True(bulkcopy == 20000);
-                Assert.True(total > beforeTotal);
-                Assert.True(total1 > beforeTotal1);
+                var actorTotal = await Actor.Select(_connection, x => new { x.ActorId }).Count().Build().ExecuteAsync();
+                var customersTotal = await Customer.Select(_connection, x => new { x.CustomerId }).Count().Build().ExecuteAsync();
                 connection.Close();
+
+                Assert.True(bulkcopy > 0);
+                Assert.True(actorTotal > beforeActorTotal);
+                Assert.True(customersTotal > beforeCustomersTotal);
+                
             }
         }
 
         [Fact]
         public async Task ExecuteAsync_with_connection_Throw_exeception()
         {
-            var data = GetTest2s();
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(data).ExecuteAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await BulkCopyFactory.Create(CONNECTIONSTRING).Copy(_customers).ExecuteAsync(null));
         }
     }
 }

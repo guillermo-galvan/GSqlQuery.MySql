@@ -1,4 +1,6 @@
 ﻿using GSqlQuery.MySql.Test.Data;
+using GSqlQuery.MySql.Test.Data.Table;
+using MySql.Data.Types;
 using System;
 using System.Linq;
 using System.Threading;
@@ -14,22 +16,22 @@ namespace GSqlQuery.MySql.Test
         public MySqlDatabaseTransactionTest()
         {
             Helper.CreateDatatable();
-            _connectionOptions = new MySqlConnectionOptions(Helper.ConnectionString);
+            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
         }
 
 
         [Fact]
         public void Commit()
         {
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = test.Insert(_connectionOptions).Build().Execute(transaction.Connection);
+                    var result = actor.Insert(_connectionOptions).Build().Execute(transaction.Connection);
                     transaction.Commit();
                     connection.Close();
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).Build().Execute().Any();
+                    var isExists = Actor.Select(_connectionOptions).Where().Equal(x => x.ActorId, result.ActorId).Build().Execute().Any();
                     Assert.True(isExists);
                 }
             }
@@ -39,15 +41,15 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public async Task CommitAsync()
         {
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Address address = new Address(0, "47 MySakila Drive", null, "Alberta", 300, string.Empty, string.Empty, new MySqlGeometry(153.1408538, -27.6333361), DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection);
+                    var result = await address.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection);
                     await transaction.CommitAsync();
                     await connection.CloseAsync();
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).Build().Execute().Any();
+                    var isExists = Address.Select(_connectionOptions).Where().Equal(x => x.AddressId, result.AddressId).Build().Execute().Any();
                     Assert.True(isExists);
                 }
             }
@@ -59,15 +61,15 @@ namespace GSqlQuery.MySql.Test
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 using (var transaction = await connection.BeginTransactionAsync(token))
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
+                    var result = await actor.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
                     await transaction.CommitAsync(token);
                     await connection.CloseAsync(token);
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).Build().Execute().Any();
+                    var isExists = Actor.Select(_connectionOptions).Where().Equal(x => x.ActorId, result.ActorId).Build().Execute().Any();
                     Assert.True(isExists);
                 }
             }
@@ -79,12 +81,12 @@ namespace GSqlQuery.MySql.Test
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Address address = new Address(0, "47 MySakila Drive", null, "Alberta", 300, string.Empty, string.Empty, new MySqlGeometry(153.1408538, -27.6333361), DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 using (var transaction = await connection.BeginTransactionAsync(token))
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
+                    var result = await address.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
                     source.Cancel();
                     await Assert.ThrowsAsync<OperationCanceledException>(async () => await transaction.CommitAsync(token));
                 }
@@ -94,16 +96,16 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void Rollback()
         {
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
                 using (var transaction = connection.BeginTransaction())
                 {
-                    var result = test.Insert(_connectionOptions).Build().Execute(transaction.Connection);
+                    var result = actor.Insert(_connectionOptions).Build().Execute(transaction.Connection);
                     transaction.Rollback();
                     connection.Close();
 
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).Build().Execute().Any();
+                    var isExists = Actor.Select(_connectionOptions).Where().Equal(x => x.ActorId, result.ActorId).Build().Execute().Any();
                     Assert.False(isExists);
                 }
             }
@@ -112,15 +114,15 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public async Task RollbackAsync()
         {
-            Test2 test = new Test2() { IsBool = true, Money = Convert.ToDecimal(200d + new Random().NextDouble()), Time = DateTime.Now };
+            Address address = new Address(0, "47 MySakila Drive", null, "Alberta", 300, string.Empty, string.Empty, new MySqlGeometry(153.1408538, -27.6333361), DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
                 using (var transaction = await connection.BeginTransactionAsync())
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection);
+                    var result = await address.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection);
                     await transaction.RollbackAsync();
                     await connection.CloseAsync();
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).AndEqual(x => x.Money, test.Money).Build().Execute().Any();
+                    var isExists = Address.Select(_connectionOptions).Where().Equal(x => x.AddressId, result.AddressId).AndEqual(x => x.CityId, address.CityId).Build().Execute().Any();
                     Assert.False(isExists);
                 }
             }
@@ -132,14 +134,14 @@ namespace GSqlQuery.MySql.Test
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            Test2 test = new Test2() { IsBool = true, Money = Convert.ToDecimal(100d + new Random().NextDouble()), Time = DateTime.Now };
+            Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 using (var transaction = await connection.BeginTransactionAsync(token))
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
+                    var result = await actor.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
                     await transaction.RollbackAsync(token);
-                    var isExists = Test2.Select(_connectionOptions).Where().Equal(x => x.Id, result.Id).AndEqual(x => x.Money, test.Money).Build().Execute(connection).Any();
+                    var isExists = Actor.Select(_connectionOptions).Where().Equal(x => x.ActorId, result.ActorId).AndEqual(x => x.LastName, actor.LastName).Build().Execute(connection).Any();
                     await connection.CloseAsync(token);
                     Assert.False(isExists);
                 }
@@ -152,12 +154,12 @@ namespace GSqlQuery.MySql.Test
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            Test2 test = new Test2() { IsBool = true, Money = 100m, Time = DateTime.Now };
+            Address address = new Address(0, "47 MySakila Drive", null, "Alberta", 300, string.Empty, string.Empty, new MySqlGeometry(153.1408538, -27.6333361), DateTime.Now);
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 using (var transaction = await connection.BeginTransactionAsync(token))
                 {
-                    var result = await test.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
+                    var result = await address.Insert(_connectionOptions).Build().ExecuteAsync(transaction.Connection, token);
                     source.Cancel();
                     await Assert.ThrowsAsync<OperationCanceledException>(async () => await transaction.RollbackAsync(token));
                 }

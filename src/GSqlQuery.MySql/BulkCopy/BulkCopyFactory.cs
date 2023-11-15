@@ -4,12 +4,12 @@
     {
         public static IMySqlBulkCopy Create(string connectionString)
         {
-            return new BulkCopyExecute(connectionString);
+            return new BulkCopyExecute(new BulkCopyConfiguration(connectionString));
         }
 
-        public static IMySqlBulkCopy Create(string connectionString, IStatements statements)
+        public static IMySqlBulkCopy Create(BulkCopyConfiguration bulkCopyConfiguration)
         {
-            return new BulkCopyExecute(connectionString, statements);
+            return new BulkCopyExecute(bulkCopyConfiguration);
         }
     }
 }

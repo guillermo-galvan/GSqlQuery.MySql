@@ -1,34 +1,59 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data;
-using GSqlQuery.Runner;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using System;
-using System.Linq;
+using System.IO;
+using System.Reflection;
 
 namespace GSqlQuery.MySql.Benchmark
 {
     internal static class CreateTable
     {
-        internal const string ConnectionString = "server=127.0.0.1;uid=root;pwd=saadmin;";
+        internal static string ConnectionString = null;
+        internal static string GetConnectionString()
+        {
+            if (string.IsNullOrWhiteSpace(ConnectionString))
+            {
+                var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                                        .AddEnvironmentVariables().AddUserSecrets(typeof(CreateTable).GetTypeInfo().Assembly);
+
+                ConnectionString = builder.Build().GetConnectionString("TEST");
+            }
+
+
+            return ConnectionString;
+
+        }
 
         internal static MySqlConnectionOptions GetConnectionOptions()
         {
-            return new MySqlConnectionOptions(ConnectionString);
+            return new MySqlConnectionOptions(GetConnectionString());
+        }
+
+        internal static MySqlConnectionOptions GetConnectionOptions(ServiceProvider serviceProvider)
+        {
+            return new MySqlConnectionOptions(GetConnectionString(), new MySqlDatabaseManagementEventsCustom(serviceProvider));
         }
 
         internal static void Create()
         {
-            var tables = Tables.Select(GetConnectionOptions()).Build().Execute();
-
-            if (tables == null || !tables.Any())
+            using (MySqlConnection connection = new MySqlConnection(ConnectionString))
             {
-                using (MySqlConnection connection = new MySqlConnection(ConnectionString))
-                {
-                    connection.Open();
+                connection.Open();
 
-                    using (var createCommand = connection.CreateCommand())
-                    {
-                        createCommand.CommandText =
-                       @"
+                var path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-schema.sql");
+                var script = new MySqlScript(connection, File.ReadAllText(path));
+                script.Execute();
+
+                path = Path.Combine(AppDomain.CurrentDomain.SetupInformation.ApplicationBase, "Data", "sakila-data.sql");
+                script = new MySqlScript(connection, File.ReadAllText(path));
+                script.Execute();
+
+                using (var createCommand = connection.CreateCommand())
+                {
+                    createCommand.CommandText =
+                   @"
                             -- -----------------------------------------------------
                             -- Schema GSQLQuery
                             -- -----------------------------------------------------
@@ -63,8 +88,7 @@ namespace GSqlQuery.MySql.Benchmark
                               PRIMARY KEY (`Id`))
                             ENGINE = InnoDB;
                         ";
-                        createCommand.ExecuteNonQuery();
-                    }
+                    createCommand.ExecuteNonQuery();
                 }
             }
         }
