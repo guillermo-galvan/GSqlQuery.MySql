@@ -1,23 +1,39 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using MySql.Data.MySqlClient;
 using System;
 using System.IO;
+using System.Reflection;
 
 namespace GSqlQuery.MySql.Benchmark
 {
     internal static class CreateTable
     {
-        internal const string ConnectionString = "server=127.0.0.1;uid=root;pwd=saadmin;";
+        internal static string ConnectionString = null;
+        internal static string GetConnectionString()
+        {
+            if (string.IsNullOrWhiteSpace(ConnectionString))
+            {
+                var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                                        .AddEnvironmentVariables().AddUserSecrets(typeof(CreateTable).GetTypeInfo().Assembly);
+
+                ConnectionString = builder.Build().GetConnectionString("TEST");
+            }
+
+
+            return ConnectionString;
+
+        }
 
         internal static MySqlConnectionOptions GetConnectionOptions()
         {
-            return new MySqlConnectionOptions(ConnectionString);
+            return new MySqlConnectionOptions(GetConnectionString());
         }
 
         internal static MySqlConnectionOptions GetConnectionOptions(ServiceProvider serviceProvider)
         {
-            return new MySqlConnectionOptions(ConnectionString, new MySqlDatabaseManagementEventsCustom(serviceProvider));
+            return new MySqlConnectionOptions(GetConnectionString(), new MySqlDatabaseManagementEventsCustom(serviceProvider));
         }
 
         internal static void Create()

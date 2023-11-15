@@ -15,7 +15,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public LimitQueryExtensionTest()
         {
             Helper.CreateDatatable();
-            _connectionOptions = new MySqlConnectionOptions(Helper.ConnectionString, new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]

@@ -17,14 +17,14 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void Create_MySqlDatabaseConnection()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
                 Assert.NotNull(result);
         }
 
         [Fact]
         public void Dispose()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 result.Dispose();
@@ -35,7 +35,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void Open_and_closed_connection()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 Assert.Equal(ConnectionState.Open, result.State);
@@ -47,7 +47,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public async Task Open_and_closed_async_connection()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 Assert.Equal(ConnectionState.Open, result.State);
@@ -62,7 +62,7 @@ namespace GSqlQuery.MySql.Test
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
 
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync(token);
                 Assert.Equal(ConnectionState.Open, result.State);
@@ -76,7 +76,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync(token);
                 source.Cancel();
@@ -89,7 +89,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () => await result.OpenAsync(token));
@@ -99,7 +99,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void GetDbCommand()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 var command = result.GetDbCommand();
@@ -111,7 +111,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void BeginTransaction()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 using (var transaction = result.BeginTransaction())
@@ -127,7 +127,7 @@ namespace GSqlQuery.MySql.Test
         [InlineData(IsolationLevel.Serializable)]
         public void BeginTransaction_with_isolationlevel(IsolationLevel isolationLevel)
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 using (var transaction = result.BeginTransaction(isolationLevel))
@@ -142,7 +142,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public async Task BeginTransaction_async()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await result.BeginTransactionAsync())
@@ -158,7 +158,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await result.BeginTransactionAsync(token))
@@ -175,7 +175,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 source.Cancel();
@@ -189,7 +189,7 @@ namespace GSqlQuery.MySql.Test
         [InlineData(IsolationLevel.Serializable)]
         public async Task BeginTransaction_async_with_isolationlevel(IsolationLevel isolationLevel)
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await result.BeginTransactionAsync(isolationLevel))
@@ -205,7 +205,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await result.BeginTransactionAsync(isolationLevel, token))
@@ -221,7 +221,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 source.Cancel();
@@ -234,7 +234,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void ITransaction_BeginTransaction()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 using (var transaction = ((IConnection)result).BeginTransaction())
@@ -248,7 +248,7 @@ namespace GSqlQuery.MySql.Test
         [InlineData(IsolationLevel.Serializable)]
         public void ITransaction_BeginTransaction_with_isolationlevel(IsolationLevel isolationLevel)
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 using (var transaction = ((IConnection)result).BeginTransaction(isolationLevel))
@@ -260,7 +260,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public async Task ITransaction_BeginTransaction_async()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await ((IConnection)result).BeginTransactionAsync())
@@ -274,7 +274,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await ((IConnection)result).BeginTransactionAsync(token))
@@ -288,7 +288,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 source.Cancel();
@@ -302,7 +302,7 @@ namespace GSqlQuery.MySql.Test
         [InlineData(IsolationLevel.Serializable)]
         public async Task ITransaction_BeginTransaction_async_with_isolationlevel(IsolationLevel isolationLevel)
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await ((IConnection)result).BeginTransactionAsync(isolationLevel))
@@ -318,7 +318,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 using (var transaction = await ((IConnection)result).BeginTransactionAsync(isolationLevel, token))
@@ -334,7 +334,7 @@ namespace GSqlQuery.MySql.Test
         {
             CancellationTokenSource source = new CancellationTokenSource();
             CancellationToken token = source.Token;
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 await result.OpenAsync();
                 source.Cancel();
@@ -346,7 +346,7 @@ namespace GSqlQuery.MySql.Test
         [Fact]
         public void RemoveTransaction()
         {
-            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.ConnectionString))
+            using (MySqlDatabaseConnection result = new MySqlDatabaseConnection(Helper.GetConnectionString()))
             {
                 result.Open();
                 using (var transaction = result.BeginTransaction())

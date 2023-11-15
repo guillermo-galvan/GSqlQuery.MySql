@@ -1,15 +1,30 @@
-﻿using MySql.Data.MySqlClient;
-using System.IO;
+﻿using Microsoft.Extensions.Configuration;
+using MySql.Data.MySqlClient;
 using System;
+using System.IO;
+using System.Reflection;
 using System.Threading;
-using System.Linq;
-using MySql.Data.Types;
 
 namespace GSqlQuery.MySql.Test
 {
     internal class Helper
     {
-        internal const string ConnectionString = "server=127.0.0.1;uid=root;pwd=saadmin;";
+        private static string connection = null;
+
+        internal static string GetConnectionString()
+        {
+            if (string.IsNullOrWhiteSpace(connection))
+            {
+                var builder = new ConfigurationBuilder().AddJsonFile("appsettings.json", optional: true, reloadOnChange: true)
+                                                        .AddEnvironmentVariables().AddUserSecrets(typeof(Helper).GetTypeInfo().Assembly);
+
+                connection = builder.Build().GetConnectionString("TEST");
+            }
+
+
+            return connection;
+
+        }
 
         private static bool IsFirtsExecute = true;
         private readonly static Mutex mut = new Mutex();
@@ -20,7 +35,7 @@ namespace GSqlQuery.MySql.Test
 
             if (IsFirtsExecute)
             {
-                using (MySqlConnection connection = new MySqlConnection(ConnectionString))
+                using (MySqlConnection connection = new MySqlConnection(GetConnectionString()))
                 {
                     connection.Open();
                     

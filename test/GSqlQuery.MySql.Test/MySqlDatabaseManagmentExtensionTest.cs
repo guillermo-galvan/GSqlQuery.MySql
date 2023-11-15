@@ -15,7 +15,7 @@ namespace GSqlQuery.MySql.Test
         public MySqlDatabaseManagementExtensionTest()
         {
             Helper.CreateDatatable();
-            _connectionOptions = new MySqlConnectionOptions(Helper.ConnectionString, new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]

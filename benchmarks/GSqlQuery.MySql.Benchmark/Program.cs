@@ -10,6 +10,8 @@ namespace GSqlQuery.MySql.Benchmark
     {
         public static void Main(string[] args)
         {
+            var a = CreateTable.GetConnectionString();
+            Console.WriteLine(a);
             IConfig config = DefaultConfig.Instance;
 
             config = config

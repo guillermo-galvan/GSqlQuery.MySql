@@ -11,7 +11,7 @@ namespace GSqlQuery.MySql.Test
 
         public MySqlDatabaseManagementEventsTest()
         {
-            _connectionOptions = new MySqlConnectionOptions(Helper.ConnectionString, new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]

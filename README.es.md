@@ -1,4 +1,4 @@
-# GSqlQuery.MySql [![en](https://img.shields.io/badge/lang-es-red.svg)](./README.md) [![NuGet](https://img.shields.io/nuget/v/GSqlQuery.MySql.svg)](https://www.nuget.org/packages/GSqlQuery.MySql)
+# GSqlQuery.MySql [![en](https://img.shields.io/badge/lang-en-red.svg)](./README.md) [![NuGet](https://img.shields.io/nuget/v/GSqlQuery.MySql.svg)](https://www.nuget.org/packages/GSqlQuery.MySql)
 
 Una biblioteca para ejecutar las consultas generadas por [GSqlQuery](https://github.com/guillermo-galvan/GSqlQuery) en la base de datos MySql para .NET
 

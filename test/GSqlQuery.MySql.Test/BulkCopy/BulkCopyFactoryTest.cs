@@ -1,12 +1,8 @@
 ﻿using GSqlQuery.MySql.BulkCopy;
-using GSqlQuery.MySql.Test.Data;
 using GSqlQuery.MySql.Test.Data.Table;
-using GSqlQuery.Runner;
 using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.IO;
-using System.Linq;
 using System.Threading.Tasks;
 using Xunit;
 
@@ -14,7 +10,7 @@ namespace GSqlQuery.MySql.Test.BulkCopy
 {
     public class BulkCopyFactoryTest
     {
-        private readonly string CONNECTIONSTRING = Helper.ConnectionString + "AllowLoadLocalInfile=true;AllowUserVariables=True;";
+        private readonly string CONNECTIONSTRING = Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;";
 
         private readonly IEnumerable<Actor> _actors;
         private readonly IEnumerable<Customer> _customers;
@@ -23,7 +19,7 @@ namespace GSqlQuery.MySql.Test.BulkCopy
         public BulkCopyFactoryTest()
         {
             Helper.CreateDatatable();
-            _connection = new MySqlConnectionOptions(Helper.ConnectionString);
+            _connection = new MySqlConnectionOptions(Helper.GetConnectionString());
             _actors = Actor.Select(_connection).Build().Execute();
             _customers = Customer.Select(_connection).Build().Execute();
         }
@@ -37,9 +33,9 @@ namespace GSqlQuery.MySql.Test.BulkCopy
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(bulkCopyConfiguration));
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(connectionString));
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(string.Empty));
-            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.ConnectionString));
-            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.ConnectionString + "AllowLoadLocalInfile=true;"));
-            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(Helper.ConnectionString + "AllowLoadLocalInfile=true;AllowUserVariables=True;", null)));
+            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString()));
+            Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;"));
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", null)));
         }
 
         [Fact]
