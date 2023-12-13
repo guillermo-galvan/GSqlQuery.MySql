@@ -10,9 +10,30 @@ EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{7A636E9A-5B04-40AA-9DB6-515EC91A04E5}"
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
+		Directory.Build.props = Directory.Build.props
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "GSqlQuery.MySql.Benchmark", "benchmarks\GSqlQuery.MySql.Benchmark\GSqlQuery.MySql.Benchmark.csproj", "{4E37A6A2-72F5-46A1-9288-6A0B7D9B4F4E}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "docs", "docs", "{1DA3551D-525A-4581-8996-C63F88BB2958}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "es", "es", "{182140F6-DDA1-40B3-85D9-D0A734FDD4BA}"
+	ProjectSection(SolutionItems) = preProject
+		docs\es\Config.md = docs\es\Config.md
+		docs\es\DatabaseManagementEvents.md = docs\es\DatabaseManagementEvents.md
+		docs\es\EntityExecute.md = docs\es\EntityExecute.md
+		docs\es\MySqlConnectionOptions.md = docs\es\MySqlConnectionOptions.md
+		docs\es\MySqlDatabaseManagement.md = docs\es\MySqlDatabaseManagement.md
+	EndProjectSection
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "en", "en", "{88B703C0-4133-48B1-8038-D104DE7C00E5}"
+	ProjectSection(SolutionItems) = preProject
+		docs\en\Config.md = docs\en\Config.md
+		docs\en\DatabaseManagementEvents.md = docs\en\DatabaseManagementEvents.md
+		docs\en\EntityExecute.md = docs\en\EntityExecute.md
+		docs\en\MySqlConnectionOptions.md = docs\en\MySqlConnectionOptions.md
+		docs\en\MySqlDatabaseManagement.md = docs\en\MySqlDatabaseManagement.md
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -35,6 +56,11 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{1DA3551D-525A-4581-8996-C63F88BB2958} = {7A636E9A-5B04-40AA-9DB6-515EC91A04E5}
+		{182140F6-DDA1-40B3-85D9-D0A734FDD4BA} = {1DA3551D-525A-4581-8996-C63F88BB2958}
+		{88B703C0-4133-48B1-8038-D104DE7C00E5} = {1DA3551D-525A-4581-8996-C63F88BB2958}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {9D88A939-58A2-437C-A209-B1324791A885}

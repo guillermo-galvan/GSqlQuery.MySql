@@ -11,6 +11,16 @@ dotnet add package GSqlQuery.MySql --version 1.0.0-alpha
 ```
 [See our documentation](./docs/en/Config.md) for instructions on how to use the package.
 
+## Example
+
+```csharp
+using GSqlQuery.MySql;
+
+MySqlConnectionOptions connectionOptions = new MySqlConnectionOptions("<connectionString>");
+
+IEnumerable<Actor> rows = EntityExecute<Actor>.Select(connectionOptions).Build().Execute();
+```
+
 ## Contributors
 
 GSqlQuery is actively maintained by [Guillermo Galván](https://github.com/guillermo-galvan). Contributions are welcome and can be submitted using pull request.
