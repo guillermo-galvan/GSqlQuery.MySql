@@ -35,7 +35,13 @@ namespace GSqlQuery.MySql.Test.BulkCopy
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(string.Empty));
             Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString()));
             Assert.Throws<InvalidOperationException>(() => BulkCopyFactory.Create(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;"));
+
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(null)));
             Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", null)));
+            Assert.Throws<ArgumentNullException>(() => BulkCopyFactory.Create(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", new MySqlFormats(), null)));
+
+            Assert.NotNull(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", new MySqlFormats()));
+            Assert.NotNull(new BulkCopyConfiguration(Helper.GetConnectionString() + "AllowLoadLocalInfile=true;AllowUserVariables=True;", new MySqlFormats(), new BulkCopyEvents()));
         }
 
         [Fact]
