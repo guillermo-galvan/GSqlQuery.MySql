@@ -1,6 +1,6 @@
-﻿using GSqlQuery.Runner.Extensions;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -9,7 +9,7 @@ namespace GSqlQuery.MySql
     public class LimitQuery<T> : Query<T> where T : class
     {
         internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, IFormats formats) :
-            base(text, columns, criteria, formats)
+            base(ref text, columns, criteria, formats)
         {
         }
     }
@@ -18,17 +18,18 @@ namespace GSqlQuery.MySql
         where T : class
     {
         public IDatabaseManagement<TDbConnection> DatabaseManagement { get; }
+        private readonly IEnumerable<IDataParameter> _parameters;
 
         internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, ConnectionOptions<TDbConnection> connectionOptions)
             : base(text, columns, criteria, connectionOptions.Formats)
         {
             DatabaseManagement = connectionOptions.DatabaseManagement;
+            _parameters = Runner.Extensions.GeneralExtension.GetParameters<T, TDbConnection>(this, DatabaseManagement);
         }
 
         public IEnumerable<T> Execute()
         {
-            return DatabaseManagement.ExecuteReader(this, GetClassOptions().PropertyOptions,
-                this.GetParameters<T, TDbConnection>(DatabaseManagement));
+            return DatabaseManagement.ExecuteReader(this, Columns, _parameters);
         }
 
         public IEnumerable<T> Execute(TDbConnection dbConnection)
@@ -37,15 +38,13 @@ namespace GSqlQuery.MySql
             {
                 throw new ArgumentNullException(nameof(dbConnection));
             }
-            return DatabaseManagement.ExecuteReader(dbConnection, this, GetClassOptions().PropertyOptions,
-                this.GetParameters<T, TDbConnection>(DatabaseManagement));
+            return DatabaseManagement.ExecuteReader(dbConnection, this, Columns, _parameters);
         }
 
         public Task<IEnumerable<T>> ExecuteAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return DatabaseManagement.ExecuteReaderAsync(this, GetClassOptions().PropertyOptions,
-                this.GetParameters<T, TDbConnection>(DatabaseManagement), cancellationToken);
+            return DatabaseManagement.ExecuteReaderAsync(this, Columns, _parameters, cancellationToken);
         }
 
         public Task<IEnumerable<T>> ExecuteAsync(TDbConnection dbConnection, CancellationToken cancellationToken = default)
@@ -55,8 +54,7 @@ namespace GSqlQuery.MySql
                 throw new ArgumentNullException(nameof(dbConnection));
             }
             cancellationToken.ThrowIfCancellationRequested();
-            return DatabaseManagement.ExecuteReaderAsync(dbConnection, this, GetClassOptions().PropertyOptions,
-                this.GetParameters<T, TDbConnection>(DatabaseManagement), cancellationToken);
+            return DatabaseManagement.ExecuteReaderAsync(dbConnection, this, Columns, _parameters, cancellationToken);
         }
     }
 }

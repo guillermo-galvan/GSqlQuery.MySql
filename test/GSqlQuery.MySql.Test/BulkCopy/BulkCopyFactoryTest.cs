@@ -19,7 +19,7 @@ namespace GSqlQuery.MySql.Test.BulkCopy
         public BulkCopyFactoryTest()
         {
             Helper.CreateDatatable();
-            _connection = new MySqlConnectionOptions(Helper.GetConnectionString());
+            _connection = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
             _actors = Actor.Select(_connection).Build().Execute();
             _customers = Customer.Select(_connection).Build().Execute();
         }

@@ -28,39 +28,76 @@ namespace GSqlQuery.MySql.Benchmark.Query
         [Params(true, false)]
         public bool IsServicesProvider { get; set; }
 
+        new public bool Async { get; set; }
+
 
         [Benchmark]
-        public async Task<int> Select_All()
+        public int Select_All()
         {
             var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider).Build() : Actor.Select(_connectionOptions).Build();
-            var result = Async ? await query.ExecuteAsync() : query.Execute();
+            var result = query.Execute();
             return result.Count();
         }
 
         [Benchmark]
-        public async Task<int> Select_Many_Columns_true()
+        public async Task<int> Select_AllAsync()
+        {
+            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider).Build() : Actor.Select(_connectionOptions).Build();
+            var result = await query.ExecuteAsync();
+            return result.Count();
+        }
+
+        [Benchmark]
+        public int Select_Many_Columns_true()
         {
             var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new {x.ActorId, x.FirstName}).Build() : 
                                              Actor.Select(_connectionOptions, x => new { x.ActorId, x.FirstName }).Build();
-            var result = Async ? await query.ExecuteAsync() : query.Execute();
+            var result = query.Execute();
             return result.Count();
         }
 
         [Benchmark]
-        public async Task<int> Select_All_Columns_With_Where()
+        public async Task<int> Select_Many_Columns_trueAsync()
+        {
+            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new { x.ActorId, x.FirstName }).Build() :
+                                             Actor.Select(_connectionOptions, x => new { x.ActorId, x.FirstName }).Build();
+            var result = await query.ExecuteAsync();
+            return result.Count();
+        }
+
+        [Benchmark]
+        public int Select_All_Columns_With_Where()
         {
             var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider).Where().In(x => x.ActorId, _ids).Build() :
                                              Actor.Select(_connectionOptions).Where().In(x => x.ActorId, _ids).Build();
-            var result = Async ? await query.ExecuteAsync() : query.Execute();
+            var result = query.Execute();
             return result.Count();
         }
 
         [Benchmark]
-        public async Task<int> Select_Many_Columns_With_Where()
+        public async Task<int> Select_All_Columns_With_WhereAsync()
+        {
+            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider).Where().In(x => x.ActorId, _ids).Build() :
+                                             Actor.Select(_connectionOptions).Where().In(x => x.ActorId, _ids).Build();
+            var result = await query.ExecuteAsync();
+            return result.Count();
+        }
+
+        [Benchmark]
+        public int Select_Many_Columns_With_Where()
         {
             var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new { x.ActorId, x.FirstName }).Where().In(x => x.ActorId, _ids).Build() :
                                              Actor.Select(_connectionOptions, x => new { x.ActorId, x.FirstName }).Where().In(x => x.ActorId, _ids).Build();
-            var result = Async ? await query.ExecuteAsync() : query.Execute();
+            var result = query.Execute();
+            return result.Count();
+        }
+
+        [Benchmark]
+        public async Task<int> Select_Many_Columns_With_WhereAsync()
+        {
+            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new { x.ActorId, x.FirstName }).Where().In(x => x.ActorId, _ids).Build() :
+                                             Actor.Select(_connectionOptions, x => new { x.ActorId, x.FirstName }).Where().In(x => x.ActorId, _ids).Build();
+            var result = await query.ExecuteAsync();
             return result.Count();
         }
     }

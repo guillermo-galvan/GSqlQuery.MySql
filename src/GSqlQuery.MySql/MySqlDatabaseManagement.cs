@@ -34,7 +34,7 @@ namespace GSqlQuery.MySql
         public Task<IEnumerable<T>> ExecuteReaderAsync<T>(MySqlDatabaseConnection connection, IQuery<T> query, IEnumerable<PropertyOptions> propertyOptions, IEnumerable<IDataParameter> parameters, CancellationToken cancellationToken = default) 
             where T : class
         {
-            return base.ExecuteReaderAsync<T>(connection, query, propertyOptions, parameters, cancellationToken);
+            return base.ExecuteReaderAsync(connection, query, propertyOptions, parameters, cancellationToken);
         }
 
         public T ExecuteScalar<T>(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters)

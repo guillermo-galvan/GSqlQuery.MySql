@@ -28,7 +28,7 @@ namespace GSqlQuery.MySql.Test
 
             var query = actor.Update(_connectionOptions, x => new { x.LastUpdate, x.LastName }).Where().Equal(x => x.ActorId, actor.ActorId).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            int result = managment.ExecuteNonQuery(query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+            int result = managment.ExecuteNonQuery(query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result > 0);
         }
 
@@ -44,7 +44,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                int result = managment.ExecuteNonQuery(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                int result = managment.ExecuteNonQuery(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -58,7 +58,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                int result = managment.ExecuteNonQuery(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                int result = managment.ExecuteNonQuery(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -68,7 +68,7 @@ namespace GSqlQuery.MySql.Test
         {
             var query = Actor.Update(_connectionOptions, x => x.LastUpdate, DateTime.Now).Where().Equal(x => x.ActorId, 2).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            int result = await managment.ExecuteNonQueryAsync(query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+            int result = await managment.ExecuteNonQueryAsync(query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result > 0);
         }
 
@@ -81,7 +81,7 @@ namespace GSqlQuery.MySql.Test
 
             var query = address.Update(_connectionOptions, x => new { x.Location, x.LastUpdate }).Where().Equal(x => x.AddressId, 1).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            int result = await managment.ExecuteNonQueryAsync(query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+            int result = await managment.ExecuteNonQueryAsync(query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
             Assert.True(result > 0);
         }
 
@@ -95,7 +95,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             source.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-            await managment.ExecuteNonQueryAsync(query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+            await managment.ExecuteNonQueryAsync(query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
         }
 
         [Fact]
@@ -109,7 +109,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                int result = await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                int result = await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -123,7 +123,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
-                int result = await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                int result = await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result > 0);
             }
         }
@@ -144,7 +144,7 @@ namespace GSqlQuery.MySql.Test
             {
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-                await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
 
@@ -155,7 +155,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                int result = await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                int result = await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -173,7 +173,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
-                int result = await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                int result = await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result > 0);
             }
         }
@@ -190,7 +190,7 @@ namespace GSqlQuery.MySql.Test
             {
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-                await managment.ExecuteNonQueryAsync(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                await managment.ExecuteNonQueryAsync(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
 
@@ -202,7 +202,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
 
             var result = managment.ExecuteReader(query, classOptions.PropertyOptions,
-                query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result.Any());
         }
 
@@ -215,7 +215,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                var result = managment.ExecuteReader(connection, query, classOptions.PropertyOptions, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = managment.ExecuteReader(connection, query, classOptions.PropertyOptions, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result.Any());
             }
         }
@@ -228,7 +228,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                var result = managment.ExecuteReader(connection, query, classOptions.PropertyOptions, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = managment.ExecuteReader(connection, query, classOptions.PropertyOptions, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result.Any());
             }
         }
@@ -240,7 +240,7 @@ namespace GSqlQuery.MySql.Test
             var query = Address.Select(_connectionOptions).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
             var result = await managment.ExecuteReaderAsync(query, classOptions.PropertyOptions,
-                query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result.Any());
         }
 
@@ -254,7 +254,7 @@ namespace GSqlQuery.MySql.Test
             var query = Actor.Select(_connectionOptions).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             var result = await managment.ExecuteReaderAsync(query, classOptions.PropertyOptions,
-                query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
             Assert.True(result.Any());
         }
 
@@ -270,7 +270,7 @@ namespace GSqlQuery.MySql.Test
             source.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(async () =>
             await managment.ExecuteReaderAsync(query, classOptions.PropertyOptions,
-                query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
         }
 
         [Fact]
@@ -282,7 +282,7 @@ namespace GSqlQuery.MySql.Test
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
                 var result = await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result.Any());
             }
         }
@@ -299,7 +299,7 @@ namespace GSqlQuery.MySql.Test
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 var result = await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result.Any());
             }
         }
@@ -318,7 +318,7 @@ namespace GSqlQuery.MySql.Test
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
                 await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                    query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                    GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
 
@@ -331,7 +331,7 @@ namespace GSqlQuery.MySql.Test
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
                 var result = await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result.Any());
             }
         }
@@ -348,7 +348,7 @@ namespace GSqlQuery.MySql.Test
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
                 var result = await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result.Any());
             }
         }
@@ -367,7 +367,7 @@ namespace GSqlQuery.MySql.Test
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
                 await managment.ExecuteReaderAsync(connection, query, classOptions.PropertyOptions,
-                    query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                    GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
 
@@ -377,7 +377,7 @@ namespace GSqlQuery.MySql.Test
             Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             var query = actor.Insert(_connectionOptions).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            var result = managment.ExecuteScalar<long>(query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+            var result = managment.ExecuteScalar<long>(query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result > 0);
         }
 
@@ -389,7 +389,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                var result = managment.ExecuteScalar<long>(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = managment.ExecuteScalar<long>(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -402,7 +402,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                var result = managment.ExecuteScalar<long>(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = managment.ExecuteScalar<long>(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -413,7 +413,7 @@ namespace GSqlQuery.MySql.Test
             Address address = new Address(1, "47 MySakila Drive", null, "Alberta", 300, string.Empty, string.Empty, new MySqlGeometry(153.1408538, -27.6333361), DateTime.Now);
             var query = address.Insert(_connectionOptions).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            var result = await managment.ExecuteScalarAsync<long>(query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+            var result = await managment.ExecuteScalarAsync<long>(query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
             Assert.True(result > 0);
         }
 
@@ -425,7 +425,7 @@ namespace GSqlQuery.MySql.Test
             Actor actor = new Actor(0, "PENELOPE", "PENELOPE", DateTime.Now);
             var query = actor.Insert(_connectionOptions).Build();
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
-            var result = await managment.ExecuteScalarAsync<long>(query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+            var result = await managment.ExecuteScalarAsync<long>(query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
             Assert.True(result > 0);
         }
 
@@ -439,7 +439,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             source.Cancel();
             await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-            await managment.ExecuteScalarAsync<long>(query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+            await managment.ExecuteScalarAsync<long>(query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
         }
 
         [Fact]
@@ -450,7 +450,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                var result = await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -465,7 +465,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
-                var result = await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                var result = await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result > 0);
             }
         }
@@ -482,7 +482,7 @@ namespace GSqlQuery.MySql.Test
             {
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-                await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
 
@@ -494,7 +494,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                var result = await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement));
+                var result = await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement));
                 Assert.True(result > 0);
             }
         }
@@ -509,7 +509,7 @@ namespace GSqlQuery.MySql.Test
             var managment = new MySqlDatabaseManagement(Helper.GetConnectionString());
             using (IConnection connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync(token))
             {
-                var result = await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Actor, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token);
+                var result = await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Actor, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token);
                 Assert.True(result > 0);
             }
         }
@@ -526,7 +526,7 @@ namespace GSqlQuery.MySql.Test
             {
                 source.Cancel();
                 await Assert.ThrowsAsync<OperationCanceledException>(async () =>
-                await managment.ExecuteScalarAsync<long>(connection, query, query.GetParameters<Address, MySqlDatabaseConnection>(_connectionOptions.DatabaseManagement), token));
+                await managment.ExecuteScalarAsync<long>(connection, query, GeneralExtension.GetParameters<Address, MySqlDatabaseConnection>(query, _connectionOptions.DatabaseManagement), token));
             }
         }
     }

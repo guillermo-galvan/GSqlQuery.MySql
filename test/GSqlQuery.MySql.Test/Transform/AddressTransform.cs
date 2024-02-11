@@ -7,6 +7,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.Test.Transform
 {
@@ -68,6 +69,11 @@ namespace GSqlQuery.MySql.Test.Transform
             DateTime lastUpdate = GetValue<DateTime>(column, reader);
 
             return new Address(addressId, address1, address2, district, cityId, postalCode, phone, location, lastUpdate);
+        }
+
+        public override Task<Address> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        {
+            return Task.FromResult(Generate(columns, reader));
         }
     }
 }

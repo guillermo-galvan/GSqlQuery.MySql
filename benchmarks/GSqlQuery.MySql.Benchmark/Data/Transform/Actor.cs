@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Data.Common;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.Benchmark.Data.Transform
 {
@@ -15,11 +16,16 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
 
         public override Actor Generate(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
         {
-            long actorId = GetValue<long>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.ActorId)), reader);
-            string firstName = GetValue<string>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.FirstName)), reader);
-            string lastName = GetValue<string>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.LastName)), reader);
-            DateTime lastUpdate = GetValue<DateTime>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.LastUpdate)), reader);
+            long actorId = GetValue<long>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.ActorId)), reader);
+            string firstName = GetValue<string>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.FirstName)), reader);
+            string lastName = GetValue<string>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.LastName)), reader);
+            DateTime lastUpdate = GetValue<DateTime>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.LastUpdate)), reader);
             return new Actor(actorId, firstName, lastName, lastUpdate);
+        }
+
+        public override Task<Actor> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        {
+            return Task.FromResult(Generate(columns, reader));
         }
     }
 }

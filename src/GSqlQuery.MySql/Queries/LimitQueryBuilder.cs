@@ -41,8 +41,15 @@ namespace GSqlQuery.MySql
         internal string GenerateQuery()
         {
             string result = _query.Text.Replace(";", "");
-            result = _length.HasValue ? $"{result} LIMIT {_start},{_length};" : $"{result} LIMIT {_start};";
-            return result;
+
+            if (_length.HasValue)
+            {
+                return "{0} LIMIT {1},{2};".Replace("{0}", result).Replace("{1}", _start.ToString()).Replace("{2}", _length.ToString());
+            }
+            else
+            {
+                return "{0} LIMIT {1};".Replace("{0}", result).Replace("{1}", _start.ToString());
+            }
         }
 
     }
@@ -65,7 +72,7 @@ namespace GSqlQuery.MySql
 
         public override LimitQuery<T> Build()
         {
-            var query = GenerateQuery();
+            string query = GenerateQuery();
             return new LimitQuery<T>(query, _query.Columns, _query.Criteria, Options);
         }
 
@@ -103,7 +110,7 @@ namespace GSqlQuery.MySql
 
         public override LimitQuery<T, TDbConnection> Build()
         {
-            var query = GenerateQuery();
+            string query = GenerateQuery();
             return new LimitQuery<T, TDbConnection>(query, _query.Columns, _query.Criteria, Options);
         }
     }

@@ -56,7 +56,7 @@ namespace GSqlQuery.MySql
             {
                 throw new ArgumentNullException(nameof(queryBuilder));
             }
-            var query = queryBuilder.Build();
+            SelectQuery<T, TDbConnection> query = queryBuilder.Build();
             return new LimitQueryBuilder<T, SelectQuery<T, TDbConnection>, TDbConnection>(queryBuilder,
                 new ConnectionOptions<TDbConnection>(query.Formats, query.DatabaseManagement), start, length);
         }
@@ -92,7 +92,7 @@ namespace GSqlQuery.MySql
             {
                 throw new ArgumentNullException(nameof(queryBuilder));
             }
-            var query = queryBuilder.Build();
+            JoinQuery<T, TDbConnection> query = queryBuilder.Build();
 
             return new LimitQueryBuilder<T, JoinQuery<T, TDbConnection>, TDbConnection>(queryBuilder,
                 new ConnectionOptions<TDbConnection>(query.Formats, query.DatabaseManagement), start, length);

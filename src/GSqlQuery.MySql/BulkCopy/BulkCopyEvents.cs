@@ -10,9 +10,9 @@ namespace GSqlQuery.MySql.BulkCopy
         {
             if (property.PropertyInfo.PropertyType == typeof(bool) || property.PropertyInfo.PropertyType == typeof(bool?))
             {
-                var boolName = $"@var{_boolCount++}";
-
-                return new ColumnAndExpression(boolName, $"{property.ColumnAttribute.Name} = ({boolName} = 'True');");
+                string boolName = "@var" + _boolCount++;
+                string expresion = "{0} = ({1} = 'True');".Replace("{0}", property.ColumnAttribute.Name).Replace("{1}", boolName);
+                return new ColumnAndExpression(boolName, expresion);
             }
             else
             {
