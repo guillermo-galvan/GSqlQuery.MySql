@@ -5,19 +5,14 @@ using MySql.Data.MySqlClient;
 using MySql.Data.Types;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.Test.Transform
 {
-    public class AddressTransform : TransformTo<Address>
+    public class AddressTransform(int numColumns) : TransformTo<Address, MySqlDataReader>(numColumns)
     {
-        public AddressTransform(int numColumns) : base(numColumns)
-        {
-        }
-
-        private static T GetValue<T>(PropertyOptionsInEntity column, DbDataReader reader)
+        private static T GetValue<T>(PropertyOptionsInEntity column, MySqlDataReader reader)
         {
             if (!column.Ordinal.HasValue)
             {
@@ -29,8 +24,7 @@ namespace GSqlQuery.MySql.Test.Transform
 
                 if (type == typeof(MySqlGeometry))
                 {
-                    MySqlDataReader reader1 = reader as MySqlDataReader;
-                    object result = reader1.GetMySqlGeometry(column.Ordinal.Value);
+                    object result = reader.GetMySqlGeometry(column.Ordinal.Value);
                     return (T)result;
                 }
 
@@ -39,7 +33,7 @@ namespace GSqlQuery.MySql.Test.Transform
             }
         }
 
-        public override Address Generate(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        public override Address Generate(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
         {
             PropertyOptionsInEntity column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.AddressId));
             long addressId = GetValue<long>(column, reader);
@@ -71,7 +65,7 @@ namespace GSqlQuery.MySql.Test.Transform
             return new Address(addressId, address1, address2, district, cityId, postalCode, phone, location, lastUpdate);
         }
 
-        public override Task<Address> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        public override Task<Address> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
         {
             return Task.FromResult(Generate(columns, reader));
         }

@@ -1,8 +1,8 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data.Table;
 using GSqlQuery.Runner;
+using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -14,7 +14,7 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
         {
         }
 
-        public override Actor Generate(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        public override Actor Generate(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
         {
             long actorId = GetValue<long>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.ActorId)), reader);
             string firstName = GetValue<string>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.FirstName)), reader);
@@ -23,7 +23,7 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
             return new Actor(actorId, firstName, lastName, lastUpdate);
         }
 
-        public override Task<Actor> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        public override Task<Actor> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
         {
             return Task.FromResult(Generate(columns, reader));
         }

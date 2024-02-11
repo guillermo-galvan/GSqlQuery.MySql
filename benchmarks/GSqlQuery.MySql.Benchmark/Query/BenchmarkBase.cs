@@ -4,6 +4,7 @@ using GSqlQuery.MySql.Benchmark.Data.Parameters;
 using GSqlQuery.MySql.Benchmark.Data.Table;
 using GSqlQuery.Runner;
 using Microsoft.Extensions.DependencyInjection;
+using MySql.Data.MySqlClient;
 
 namespace GSqlQuery.MySql.Benchmark.Query
 {
@@ -19,7 +20,7 @@ namespace GSqlQuery.MySql.Benchmark.Query
         public BenchmarkBase()
         {
             _serviceCollection = new ServiceCollection()
-            .AddScoped<ITransformTo<Actor>, Data.Transform.Actors>()
+            .AddScoped<ITransformTo<Actor, MySqlDataReader>, Data.Transform.Actors>()
             .AddScoped<IGetParameterTypes<Actor>, Actors>()
            .BuildServiceProvider();
             _connectionOptions = CreateTable.GetConnectionOptions();

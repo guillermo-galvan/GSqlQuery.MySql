@@ -1,12 +1,14 @@
 ﻿using GSqlQuery.Runner;
-using System.Collections.Generic;
+using MySql.Data.MySqlClient;
 using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
 {
-    public sealed class MySqlDatabaseManagement : DatabaseManagement, IDatabaseManagement<MySqlDatabaseConnection>
+    public class MySqlDatabaseManagement :
+        DatabaseManagement<MySqlDatabaseConnection, MySqlDatabaseTransaction, MySqlCommand, MySqlTransaction, MySqlDataReader>, 
+        IDatabaseManagement<MySqlDatabaseConnection>
     {
         public MySqlDatabaseManagement(string connectionString) :
             base(connectionString, new MySqlDatabaseManagementEvents())
@@ -15,39 +17,7 @@ namespace GSqlQuery.MySql
         public MySqlDatabaseManagement(string connectionString, DatabaseManagementEvents events) : base(connectionString, events)
         { }
 
-        public int ExecuteNonQuery(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters)
-        {
-            return base.ExecuteNonQuery(connection, query, parameters);
-        }
-
-        public Task<int> ExecuteNonQueryAsync(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters, CancellationToken cancellationToken = default)
-        {
-            return base.ExecuteNonQueryAsync(connection, query, parameters, cancellationToken);
-        }
-
-        public IEnumerable<T> ExecuteReader<T>(MySqlDatabaseConnection connection, IQuery<T> query, IEnumerable<PropertyOptions> propertyOptions, IEnumerable<IDataParameter> parameters) 
-            where T : class
-        {
-            return base.ExecuteReader(connection, query, propertyOptions, parameters);
-        }
-
-        public Task<IEnumerable<T>> ExecuteReaderAsync<T>(MySqlDatabaseConnection connection, IQuery<T> query, IEnumerable<PropertyOptions> propertyOptions, IEnumerable<IDataParameter> parameters, CancellationToken cancellationToken = default) 
-            where T : class
-        {
-            return base.ExecuteReaderAsync(connection, query, propertyOptions, parameters, cancellationToken);
-        }
-
-        public T ExecuteScalar<T>(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters)
-        {
-            return base.ExecuteScalar<T>(connection, query, parameters);
-        }
-
-        public Task<T> ExecuteScalarAsync<T>(MySqlDatabaseConnection connection, IQuery query, IEnumerable<IDataParameter> parameters, CancellationToken cancellationToken = default)
-        {
-            return base.ExecuteScalarAsync<T>(connection, query, parameters, cancellationToken);
-        }
-
-        public override IConnection GetConnection()
+        public override MySqlDatabaseConnection GetConnection()
         {
             MySqlDatabaseConnection mySqlDatabase = new MySqlDatabaseConnection(_connectionString);
 
@@ -59,13 +29,9 @@ namespace GSqlQuery.MySql
             return mySqlDatabase;
         }
 
-        MySqlDatabaseConnection IDatabaseManagement<MySqlDatabaseConnection>.GetConnection()
+        public async override Task<MySqlDatabaseConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
         {
-            return (MySqlDatabaseConnection)GetConnection();
-        }
-
-        public async override Task<IConnection> GetConnectionAsync(CancellationToken cancellationToken = default)
-        {
+            cancellationToken.ThrowIfCancellationRequested();
             MySqlDatabaseConnection databaseConnection = new MySqlDatabaseConnection(_connectionString);
 
             if (databaseConnection.State != ConnectionState.Open)
@@ -74,11 +40,6 @@ namespace GSqlQuery.MySql
             }
 
             return databaseConnection;
-        }
-
-        async Task<MySqlDatabaseConnection> IDatabaseManagement<MySqlDatabaseConnection>.GetConnectionAsync(CancellationToken cancellationToken)
-        {
-            return (MySqlDatabaseConnection)await GetConnectionAsync(cancellationToken);
         }
     }
 }

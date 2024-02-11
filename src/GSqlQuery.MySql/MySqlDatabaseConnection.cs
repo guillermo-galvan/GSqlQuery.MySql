@@ -6,49 +6,40 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
 {
-    public sealed class MySqlDatabaseConnection : Connection, IConnection
+    public sealed class MySqlDatabaseConnection(string connectionString) :
+        Connection<MySqlDatabaseTransaction, MySqlConnection, MySqlTransaction, MySqlCommand>(new MySqlConnection(connectionString)) , 
+        IConnection<MySqlDatabaseTransaction,MySqlCommand>
     {
-        public MySqlDatabaseConnection(string connectionString) : base(new MySqlConnection(connectionString))
-        { }
-
-        public MySqlDatabaseTransaction BeginTransaction()
-        {
-            return (MySqlDatabaseTransaction)SetTransaction(new MySqlDatabaseTransaction(this, ((MySqlConnection)_connection).BeginTransaction()));
-        }
-
-        public MySqlDatabaseTransaction BeginTransaction(IsolationLevel isolationLevel)
-        {
-            return (MySqlDatabaseTransaction)SetTransaction(new MySqlDatabaseTransaction(this, ((MySqlConnection)_connection).BeginTransaction(isolationLevel)));
-        }
-
-        public async Task<MySqlDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return (MySqlDatabaseTransaction)SetTransaction(new MySqlDatabaseTransaction(this, await ((MySqlConnection)_connection).BeginTransactionAsync(cancellationToken)));
-        }
-
-        public async Task<MySqlDatabaseTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-            return
-                (MySqlDatabaseTransaction)SetTransaction(new MySqlDatabaseTransaction(this,
-                await ((MySqlConnection)_connection).BeginTransactionAsync(isolationLevel, cancellationToken)));
-        }
-
         public override Task CloseAsync(CancellationToken cancellationToken = default)
         {
             cancellationToken.ThrowIfCancellationRequested();
-            return ((MySqlConnection)_connection).CloseAsync();
+            return _connection.CloseAsync();
         }
 
-        ITransaction IConnection.BeginTransaction() => BeginTransaction();
+        public override MySqlDatabaseTransaction BeginTransaction()
+        {
+            MySqlTransaction mySqlTransaction = _connection.BeginTransaction();
+            return SetTransaction(new MySqlDatabaseTransaction(this, mySqlTransaction));
+        }
 
-        ITransaction IConnection.BeginTransaction(IsolationLevel isolationLevel) => BeginTransaction(isolationLevel);
+        public override MySqlDatabaseTransaction BeginTransaction(IsolationLevel isolationLevel)
+        {
+            return SetTransaction(new MySqlDatabaseTransaction(this, _connection.BeginTransaction(isolationLevel)));
+        }
 
-        async Task<ITransaction> IConnection.BeginTransactionAsync(CancellationToken cancellationToken = default) => await BeginTransactionAsync(cancellationToken);
+        public async override Task<MySqlDatabaseTransaction> BeginTransactionAsync(CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            MySqlTransaction mySqlTransaction = await _connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false);
+            return SetTransaction(new MySqlDatabaseTransaction(this, mySqlTransaction));
+        }
 
-        async Task<ITransaction> IConnection.BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default) =>
-            await BeginTransactionAsync(isolationLevel, cancellationToken);
+        public async override Task<MySqlDatabaseTransaction> BeginTransactionAsync(IsolationLevel isolationLevel, CancellationToken cancellationToken = default)
+        {
+            cancellationToken.ThrowIfCancellationRequested();
+            MySqlTransaction mySqlTransaction = await _connection.BeginTransactionAsync(isolationLevel, cancellationToken).ConfigureAwait(false);
+            return SetTransaction(new MySqlDatabaseTransaction(this, mySqlTransaction));
+        }
 
         ~MySqlDatabaseConnection()
         {
