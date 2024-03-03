@@ -1,10 +1,7 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data.Table;
 using GSqlQuery.Runner;
-using MySql.Data.MySqlClient;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.Benchmark.Data.Transform
 {
@@ -14,18 +11,36 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
         {
         }
 
-        public override Actor Generate(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
+        public override Actor CreateEntity(IEnumerable<PropertyValue> propertyValues)
         {
-            long actorId = GetValue<long>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.ActorId)), reader);
-            string firstName = GetValue<string>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.FirstName)), reader);
-            string lastName = GetValue<string>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.LastName)), reader);
-            DateTime lastUpdate = GetValue<DateTime>(columns.FirstOrDefault(x => x.Property.PropertyInfo.Name == nameof(Actor.LastUpdate)), reader);
-            return new Actor(actorId, firstName, lastName, lastUpdate);
-        }
+            long actorId = default;
+            string firstName = default;
+            string lastName = default;
+            DateTime lastUpdate = default;
 
-        public override Task<Actor> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
-        {
-            return Task.FromResult(Generate(columns, reader));
+
+            foreach (PropertyValue item in propertyValues)
+            {
+                switch (item.Property.PropertyInfo.Name)
+                {
+                    case nameof(Actor.ActorId):
+                        actorId = (long)item.Value;
+                        break;
+                    case nameof(Actor.FirstName):
+                        firstName = (string)item.Value;
+                        break;
+                    case nameof(Actor.LastName):
+                        lastName = (string)item.Value;
+                        break;
+                    case nameof(Actor.LastUpdate):
+                        lastUpdate = (DateTime)item.Value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
+            return new Actor(actorId, firstName, lastName, lastUpdate);
         }
     }
 }

@@ -269,13 +269,28 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_two_Join_with_where()
+        public void Limit_executeasync_in_two_Join_with_where()
         {
-            var result = await Address.Select(_connectionOptions)
-                                      .InnerJoin<City>()
-                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+            var result = Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
                                       .Where()
-                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Equal(x => x.Table1.ActorId, 1)
+                                      .Limit(0, 5)
+                                      .Build().Execute();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async void Limit_executeasync_in_two_Join_with_whereAsync()
+        {
+            var result = await Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
+                                      .Where()
+                                      .Equal(x => x.Table1.ActorId, 1)
                                       .Limit(0,5)
                                       .Build().ExecuteAsync();
 
@@ -299,13 +314,13 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public async void Limit_executeasync_in_three_Join_with_where()
         {
-            var result = await Address.Select(_connectionOptions)
-                                      .InnerJoin<City>()
-                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
-                                      .InnerJoin<Store>()
-                                      .Equal(x => x.Table1.AddressId, x => x.Table3.AddressId)
+            var result = await Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
+                                      .InnerJoin<Film>()
+                                      .Equal(x => x.Table2.FilmId, x => x.Table3.FilmId)
                                       .Where()
-                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Equal(x => x.Table1.ActorId, 1)
                                       .Limit(0, 5)
                                       .Build().ExecuteAsync();
 

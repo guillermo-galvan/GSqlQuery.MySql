@@ -5,69 +5,70 @@ using MySql.Data.MySqlClient;
 using MySql.Data.Types;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.Test.Transform
 {
     public class AddressTransform(int numColumns) : TransformTo<Address, MySqlDataReader>(numColumns)
     {
-        private static T GetValue<T>(PropertyOptionsInEntity column, MySqlDataReader reader)
+        public override Address CreateEntity(IEnumerable<PropertyValue> propertyValues)
         {
-            if (!column.Ordinal.HasValue)
-            {
-                return (T)column.DefaultValue;
-            }
-            else
-            {
-                var type = typeof(T);
+            long addressId = default;
+            string address1 = default;
+            string address2 = default;
+            string district = default;
+            long cityId = default;
+            string postalCode = default;
+            string phone = default;
+            MySqlGeometry location = default;
+            DateTime lastUpdate = default;
 
-                if (type == typeof(MySqlGeometry))
+            foreach (PropertyValue item in propertyValues)
+            {
+                switch (item.Property.PropertyInfo.Name)
                 {
-                    object result = reader.GetMySqlGeometry(column.Ordinal.Value);
-                    return (T)result;
+                    case nameof(Address.AddressId):
+                        addressId = (long)item.Value;
+                        break;
+                    case nameof(Address.Address1):
+                        address1 = (string)item.Value;
+                        break;
+                    case nameof(Address.Address2):
+                        address2 = (string)item.Value;
+                        break;
+                    case nameof(Address.District):
+                        district = (string)item.Value;
+                        break;
+                    case nameof(Address.CityId):
+                        cityId = (long)item.Value;
+                        break;
+                    case nameof(Address.PostalCode):
+                        postalCode = (string)item.Value;
+                        break;
+                    case nameof(Address.Phone):
+                        phone = (string)item.Value;
+                        break;
+                    case nameof(Address.Location):
+                        location = (MySqlGeometry)item.Value;
+                        break;
+                    case nameof(Address.LastUpdate):
+                        lastUpdate = (DateTime)item.Value;
+                        break;
+                    default:
+                        break;
                 }
-
-                var value = reader.GetValue(column.Ordinal.Value);
-                return (T)TransformTo.SwitchTypeValue(type, value);
             }
-        }
-
-        public override Address Generate(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
-        {
-            PropertyOptionsInEntity column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.AddressId));
-            long addressId = GetValue<long>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.Address1));
-            string address1 = GetValue<string>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.Address2));
-            string address2 = GetValue<string>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.District));
-            string district = GetValue<string>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.CityId));
-            long cityId = GetValue<long>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.PostalCode));
-            string postalCode = GetValue<string>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.Phone));
-            string phone = GetValue<string>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.Location));
-            MySqlGeometry location = GetValue<MySqlGeometry>(column, reader);
-
-            column = columns.First(x => x.Property.PropertyInfo.Name == nameof(Address.LastUpdate));
-            DateTime lastUpdate = GetValue<DateTime>(column, reader);
 
             return new Address(addressId, address1, address2, district, cityId, postalCode, phone, location, lastUpdate);
         }
 
-        public override Task<Address> GenerateAsync(IEnumerable<PropertyOptionsInEntity> columns, MySqlDataReader reader)
+        public override object GetValue(int ordinal, MySqlDataReader reader, Type propertyType)
         {
-            return Task.FromResult(Generate(columns, reader));
+            if (propertyType == typeof(MySqlGeometry))
+            {
+                return  reader.GetMySqlGeometry(ordinal);
+            }
+
+            return base.GetValue(ordinal, reader, propertyType);
         }
     }
 }
