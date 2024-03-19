@@ -22,7 +22,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` LIMIT 0,5;";
 
-            var result = Actor.Select(_connectionOptions.Formats).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -31,7 +31,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_where()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` WHERE `sakila`.`actor`.`last_name` IS NOT NULL LIMIT 0,5;";
-            var result = Actor.Select(_connectionOptions.Formats).Where().IsNotNull(x => x.LastName).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).Where().IsNotNull(x => x.LastName).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -41,7 +41,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_orderby()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` ORDER BY `sakila`.`actor`.`actor_id` ASC LIMIT 0,5;";
-            var result = Actor.Select(_connectionOptions.Formats).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }

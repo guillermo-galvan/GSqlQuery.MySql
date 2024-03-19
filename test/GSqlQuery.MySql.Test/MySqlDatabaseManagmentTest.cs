@@ -1,7 +1,5 @@
-﻿using GSqlQuery.MySql.Test.Data;
-using GSqlQuery.MySql.Test.Data.Table;
+﻿using GSqlQuery.MySql.Test.Data.Table;
 using GSqlQuery.Runner;
-using GSqlQuery.Runner.Extensions;
 using MySql.Data.Types;
 using System;
 using System.Linq;

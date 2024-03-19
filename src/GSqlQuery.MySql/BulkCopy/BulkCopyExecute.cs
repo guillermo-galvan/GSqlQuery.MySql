@@ -223,7 +223,5 @@ namespace GSqlQuery.MySql.BulkCopy
             cancellationToken.ThrowIfCancellationRequested();
             return GetMySqlBulkLoader(mySqlConnection, fileBulkLoader).LoadAsync();
         }
-
-        IBulkCopyExecute IBulkCopy.Copy<T>(IEnumerable<T> values) => Copy(values);
     }
 }

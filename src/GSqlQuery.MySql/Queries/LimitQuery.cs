@@ -6,25 +6,25 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
 {
-    public class LimitQuery<T> : Query<T> where T : class
+    public class LimitQuery<T> : Query<T, QueryOptions> where T : class
     {
-        internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, IFormats formats) :
-            base(ref text, columns, criteria, formats)
+        internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, QueryOptions queryOptions) :
+            base(ref text, columns, criteria, queryOptions)
         {
         }
     }
 
-    public class LimitQuery<T, TDbConnection> : LimitQuery<T>, IExecute<IEnumerable<T>, TDbConnection>
+    public class LimitQuery<T, TDbConnection> : Query<T, ConnectionOptions<TDbConnection>>, IExecute<IEnumerable<T>, TDbConnection>, IQuery<T>
         where T : class
     {
         public IDatabaseManagement<TDbConnection> DatabaseManagement { get; }
         private readonly IEnumerable<IDataParameter> _parameters;
 
         internal LimitQuery(string text, IEnumerable<PropertyOptions> columns, IEnumerable<CriteriaDetail> criteria, ConnectionOptions<TDbConnection> connectionOptions)
-            : base(text, columns, criteria, connectionOptions.Formats)
+            : base(ref text, columns, criteria, connectionOptions)
         {
             DatabaseManagement = connectionOptions.DatabaseManagement;
-            _parameters = Runner.Extensions.GeneralExtension.GetParameters<T, TDbConnection>(this, DatabaseManagement);
+            _parameters = Runner.GeneralExtension.GetParameters<T, TDbConnection>(this, DatabaseManagement);
         }
 
         public IEnumerable<T> Execute()
