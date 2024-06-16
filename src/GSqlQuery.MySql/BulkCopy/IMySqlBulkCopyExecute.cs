@@ -4,7 +4,7 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.BulkCopy
 {
-    public interface IMySqlBulkCopyExecute : IMySqlBulkCopy, IBulkCopyExecute
+    public interface IMySqlBulkCopyExecute : IMySqlBulkCopy, IExecute<int>
     {
         int Execute(MySqlConnection dbConnection);
 

@@ -4,7 +4,6 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Xunit;
-using GSqlQuery.MySql;
 
 namespace GSqlQuery.MySql.Test.Extensions
 {
@@ -23,7 +22,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` LIMIT 0,5;";
 
-            var result = Actor.Select(_connectionOptions.Formats).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -32,7 +31,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_where()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` WHERE `sakila`.`actor`.`last_name` IS NOT NULL LIMIT 0,5;";
-            var result = Actor.Select(_connectionOptions.Formats).Where().IsNotNull(x => x.LastName).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).Where().IsNotNull(x => x.LastName).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -42,7 +41,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_orderby()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` ORDER BY `sakila`.`actor`.`actor_id` ASC LIMIT 0,5;";
-            var result = Actor.Select(_connectionOptions.Formats).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -270,13 +269,28 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_two_Join_with_where()
+        public void Limit_executeasync_in_two_Join_with_where()
         {
-            var result = await Address.Select(_connectionOptions)
-                                      .InnerJoin<City>()
-                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
+            var result = Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
                                       .Where()
-                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Equal(x => x.Table1.ActorId, 1)
+                                      .Limit(0, 5)
+                                      .Build().Execute();
+
+            Assert.NotNull(result);
+            Assert.NotEmpty(result);
+        }
+
+        [Fact]
+        public async void Limit_executeasync_in_two_Join_with_whereAsync()
+        {
+            var result = await Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
+                                      .Where()
+                                      .Equal(x => x.Table1.ActorId, 1)
                                       .Limit(0,5)
                                       .Build().ExecuteAsync();
 
@@ -300,13 +314,13 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public async void Limit_executeasync_in_three_Join_with_where()
         {
-            var result = await Address.Select(_connectionOptions)
-                                      .InnerJoin<City>()
-                                      .Equal(x => x.Table1.CityId, x => x.Table2.CityId)
-                                      .InnerJoin<Store>()
-                                      .Equal(x => x.Table1.AddressId, x => x.Table3.AddressId)
+            var result = await Actor.Select(_connectionOptions)
+                                      .InnerJoin<Film_Actor>()
+                                      .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
+                                      .InnerJoin<Film>()
+                                      .Equal(x => x.Table2.FilmId, x => x.Table3.FilmId)
                                       .Where()
-                                      .Equal(x => x.Table1.CityId, 300)
+                                      .Equal(x => x.Table1.ActorId, 1)
                                       .Limit(0, 5)
                                       .Build().ExecuteAsync();
 

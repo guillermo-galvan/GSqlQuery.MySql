@@ -3,16 +3,10 @@ using MySql.Data.MySqlClient;
 
 namespace GSqlQuery.MySql
 {
-    public sealed class MySqlDatabaseTransaction : Transaction
+    public sealed class MySqlDatabaseTransaction(MySqlDatabaseConnection connection, MySqlTransaction transaction) : 
+        Transaction<MySqlDatabaseConnection,MySqlCommand, MySqlTransaction, MySqlConnection>(connection, transaction), 
+        ITransaction<MySqlDatabaseConnection, MySqlTransaction>
     {
-        public MySqlDatabaseTransaction(MySqlDatabaseConnection mySqlDatabaseConnection, MySqlTransaction mySqlTransaction)
-            : base(mySqlDatabaseConnection, mySqlTransaction)
-        { }
-
-        public MySqlDatabaseConnection Connection => (MySqlDatabaseConnection)_connection;
-
-        public MySqlTransaction Transaction => (MySqlTransaction)_transaction;
-
         ~MySqlDatabaseTransaction()
         {
             Dispose(disposing: false);

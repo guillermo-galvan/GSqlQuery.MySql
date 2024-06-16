@@ -6,13 +6,9 @@ using System.Data.Common;
 
 namespace GSqlQuery.MySql.Benchmark.Data.Transform
 {
-    internal abstract class TransformTo<T>: Runner.Transforms.TransformTo<T> where T : class
+    internal abstract class TransformTo<T>(int numColumns) : TransformTo<T, MySqlDataReader>(numColumns) where T : class
     {
-        public TransformTo(int numColumns) : base(numColumns)
-        {
-        }
-
-        protected T1 GetValue<T1>(PropertyOptionsInEntity column, DbDataReader reader)
+        protected T1 GetValue<T1>(PropertyOptionsInEntity column, MySqlDataReader reader)
         {
             if (column == null)
             {
@@ -28,8 +24,7 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
 
                 if (type == typeof(MySqlGeometry))
                 {
-                    MySqlDataReader reader1 = reader as MySqlDataReader;
-                    object result = reader1.GetMySqlGeometry(column.Ordinal.Value);
+                    object result = reader.GetMySqlGeometry(column.Ordinal.Value);
                     return (T1)result;
                 }
 

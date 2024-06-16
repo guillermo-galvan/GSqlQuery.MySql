@@ -2,8 +2,6 @@
 using GSqlQuery.Runner;
 using System;
 using System.Collections.Generic;
-using System.Data.Common;
-using System.Linq;
 
 namespace GSqlQuery.MySql.Benchmark.Data.Transform
 {
@@ -13,12 +11,35 @@ namespace GSqlQuery.MySql.Benchmark.Data.Transform
         {
         }
 
-        public override Actor Generate(IEnumerable<PropertyOptionsInEntity> columns, DbDataReader reader)
+        public override Actor CreateEntity(IEnumerable<PropertyValue> propertyValues)
         {
-            long actorId = GetValue<long>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.ActorId)), reader);
-            string firstName = GetValue<string>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.FirstName)), reader);
-            string lastName = GetValue<string>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.LastName)), reader);
-            DateTime lastUpdate = GetValue<DateTime>(columns.First(x => x.Property.PropertyInfo.Name == nameof(Actor.LastUpdate)), reader);
+            long actorId = default;
+            string firstName = default;
+            string lastName = default;
+            DateTime lastUpdate = default;
+
+
+            foreach (PropertyValue item in propertyValues)
+            {
+                switch (item.Property.PropertyInfo.Name)
+                {
+                    case nameof(Actor.ActorId):
+                        actorId = (long)item.Value;
+                        break;
+                    case nameof(Actor.FirstName):
+                        firstName = (string)item.Value;
+                        break;
+                    case nameof(Actor.LastName):
+                        lastName = (string)item.Value;
+                        break;
+                    case nameof(Actor.LastUpdate):
+                        lastUpdate = (DateTime)item.Value;
+                        break;
+                    default:
+                        break;
+                }
+            }
+
             return new Actor(actorId, firstName, lastName, lastUpdate);
         }
     }

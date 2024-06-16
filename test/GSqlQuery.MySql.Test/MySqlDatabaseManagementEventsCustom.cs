@@ -30,14 +30,14 @@ namespace GSqlQuery.MySql.Test
             return parameters.Select(x => new MySqlParameter(x.Name, x.Value));
         }
 
-        public override ITransformTo<T> GetTransformTo<T>(ClassOptions classOptions)
+        public override ITransformTo<T, TDbDataReader> GetTransformTo<T, TDbDataReader>(ClassOptions classOptions)
         {
             if (typeof(T) == typeof(Address))
             {
-                return (ITransformTo<T>)new AddressTransform(classOptions.PropertyOptions.Count());
+                return (ITransformTo<T, TDbDataReader>)new AddressTransform(classOptions.PropertyOptions.Count());
             }
 
-            return base.GetTransformTo<T>(classOptions);
+            return base.GetTransformTo<T, TDbDataReader>(classOptions);
         }
     }
 }

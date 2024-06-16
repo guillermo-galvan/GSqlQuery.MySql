@@ -61,9 +61,9 @@ namespace GSqlQuery.MySql.BulkCopy
             {
                 LocalInfileVerify(connection);
 
-                foreach (var item in _files)
+                foreach (FileBulkLoader item in _files)
                 {
-                    result .Add( WriteToBulkCopy(connection, item));
+                    result.Add( WriteToBulkCopy(connection, item));
                 }
             }
             finally
@@ -104,7 +104,7 @@ namespace GSqlQuery.MySql.BulkCopy
             {
                 LocalInfileVerify(connection);
 
-                foreach (var item in _files)
+                foreach (FileBulkLoader item in _files)
                 {
                     result += await WriteToBulkCopyAsync(connection, item, cancellationToken);
                 }
@@ -119,7 +119,7 @@ namespace GSqlQuery.MySql.BulkCopy
 
         private FileBulkLoader CreateFileBulkLoader<T>(IEnumerable<T> values)
         {
-            var classOption = ClassOptionsFactory.GetClassOptions(typeof(T));
+            ClassOptions classOption = ClassOptionsFactory.GetClassOptions(typeof(T));
 
             List<string> columns = new List<string>();
             List<string> expressions = new List<string>();
@@ -128,7 +128,7 @@ namespace GSqlQuery.MySql.BulkCopy
             {
                 if (!property.ColumnAttribute.IsAutoIncrementing)
                 {
-                    var columnsAndExpression = _bulkCopyConfiguration.Events.GetColumnaAndExpression(property);
+                    ColumnAndExpression columnsAndExpression = _bulkCopyConfiguration.Events.GetColumnaAndExpression(property);
 
                     if (string.IsNullOrEmpty(columnsAndExpression.ColumnName))
                     {
@@ -147,7 +147,7 @@ namespace GSqlQuery.MySql.BulkCopy
             string path = Path.Combine(Path.GetTempPath(), Path.GetTempFileName());
             using (StreamWriter sw = new StreamWriter(path, false))
             {
-                foreach (var item in values)
+                foreach (T item in values)
                 {
                     Queue<object> fields = new Queue<object>();
 
@@ -166,7 +166,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 sw.Close();
             }
 
-            return new FileBulkLoader(classOption.Table.GetTableName(_bulkCopyConfiguration.Formats), path, columns, expressions);
+            return new FileBulkLoader(TableAttributeExtension.GetTableName(classOption.Table, _bulkCopyConfiguration.Formats), path, columns, expressions);
         }
 
         private void LocalInfileVerify(MySqlConnection connection, bool isValidation = true)
@@ -223,7 +223,5 @@ namespace GSqlQuery.MySql.BulkCopy
             cancellationToken.ThrowIfCancellationRequested();
             return GetMySqlBulkLoader(mySqlConnection, fileBulkLoader).LoadAsync();
         }
-
-        IBulkCopyExecute IBulkCopy.Copy<T>(IEnumerable<T> values) => Copy(values);
     }
 }

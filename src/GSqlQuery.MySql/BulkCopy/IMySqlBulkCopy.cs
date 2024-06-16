@@ -2,8 +2,8 @@
 
 namespace GSqlQuery.MySql.BulkCopy
 {
-    public interface IMySqlBulkCopy : IBulkCopy
+    public interface IMySqlBulkCopy
     {
-        new IMySqlBulkCopyExecute Copy<T>(IEnumerable<T> values);
+        IMySqlBulkCopyExecute Copy<T>(IEnumerable<T> values);
     }
 }
