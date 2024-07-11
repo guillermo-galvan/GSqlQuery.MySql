@@ -7,7 +7,7 @@ Una biblioteca para ejecutar las consultas generadas por [GSqlQuery](https://git
 GSqlQuery.MySql se puede instalar utilizando el administrador de [paquetes Nuget](https://www.nuget.org/packages/GSqlQuery.MySql) o la `dotnet` CLI
 
 ```shell
-dotnet add package GSqlQuery.MySql --version 2.0.0
+dotnet add package GSqlQuery.MySql --version 2.0.1
 ```
 
 [Revise nuestra documentación](./docs/es/Config.md) para obtener instrucciones sobre cómo utilizar el paquete.
@@ -24,7 +24,7 @@ IEnumerable<Actor> rows = EntityExecute<Actor>.Select(connectionOptions).Build()
 
 ## Colaborar
 
-GSqlQuery es mantenido activamente por [Guillermo Galván](https://github.com/guillermo-galvan). Las contribuciones son bienvenidas y se pueden enviar mediante pull request.
+GSqlQuery.MySql es mantenido activamente por [Guillermo Galván](https://github.com/guillermo-galvan). Las contribuciones son bienvenidas y se pueden enviar mediante pull request.
 
 ## Licencia
 Copyright (c) Guillermo Galván. All rights reserved.

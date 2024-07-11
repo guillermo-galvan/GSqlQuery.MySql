@@ -1,6 +1,4 @@
-﻿using System.Linq;
-
-namespace GSqlQuery.MySql
+﻿namespace GSqlQuery.MySql
 {
     internal abstract class LimitQueryBuilderBase<T, TReturn, TQueryOptions, TQuery> : QueryBuilderBase<T, TReturn, TQueryOptions>
         where T : class
@@ -9,10 +7,10 @@ namespace GSqlQuery.MySql
         where TQueryOptions : QueryOptions
     {
         protected readonly TQuery _query;
-        protected readonly int _start;
-        protected readonly int? _length;
+        protected readonly uint _start;
+        protected readonly uint? _length;
 
-        public LimitQueryBuilderBase(IQueryBuilderWithWhere<TQuery, TQueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilderBase(IQueryBuilderWithWhere<TQuery, TQueryOptions> queryBuilder, uint start, uint? length)
             : base(queryBuilder.QueryOptions)
         {
             _query = queryBuilder.Build();
@@ -21,22 +19,22 @@ namespace GSqlQuery.MySql
             Columns = [];
         }
 
-        public LimitQueryBuilderBase(IAndOr<T, TQuery, TQueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilderBase(IAndOr<T, TQuery, TQueryOptions> queryBuilder, uint start, uint? length)
             : base(queryBuilder.QueryOptions)
         {
             _query = queryBuilder.Build();
             _start = start;
             _length = length;
-            Columns = Enumerable.Empty<PropertyOptions>();
+            Columns = [];
         }
 
-        public LimitQueryBuilderBase(IQueryBuilder<TQuery, TQueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilderBase(IQueryBuilder<TQuery, TQueryOptions> queryBuilder, uint start, uint? length)
            : base(queryBuilder.QueryOptions)
         {
             _query = queryBuilder.Build();
             _start = start;
             _length = length;
-            Columns = Enumerable.Empty<PropertyOptions>();
+            Columns = [];
         }
 
         internal string GenerateQuery()
@@ -59,15 +57,15 @@ namespace GSqlQuery.MySql
         where T : class
         where TQuery : IQuery<T, QueryOptions>
     {
-        public LimitQueryBuilder(IQueryBuilderWithWhere<TQuery, QueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilder(IQueryBuilderWithWhere<TQuery, QueryOptions> queryBuilder, uint start, uint? length)
             : base(queryBuilder, start, length)
         { }
 
-        public LimitQueryBuilder(IAndOr<T, TQuery, QueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilder(IAndOr<T, TQuery, QueryOptions> queryBuilder, uint start, uint? length)
             : base(queryBuilder, start, length)
         { }
 
-        public LimitQueryBuilder(IQueryBuilder<TQuery, QueryOptions> queryBuilder, int start, int? length)
+        public LimitQueryBuilder(IQueryBuilder<TQuery, QueryOptions> queryBuilder, uint start, uint? length)
             : base(queryBuilder, start, length)
         { }
 
@@ -85,15 +83,15 @@ namespace GSqlQuery.MySql
         where T : class
         where TQuery : IQuery<T, ConnectionOptions<TDbConnection>>
     {
-        public LimitQueryBuilder(IQueryBuilderWithWhere<TQuery, ConnectionOptions<TDbConnection>> queryBuilder, int start, int? length)
+        public LimitQueryBuilder(IQueryBuilderWithWhere<TQuery, ConnectionOptions<TDbConnection>> queryBuilder, uint start, uint? length)
             : base(queryBuilder, start, length)
         {  }
 
-        public LimitQueryBuilder(IAndOr<T, TQuery, ConnectionOptions<TDbConnection>> queryBuilder, int start, int? length)
+        public LimitQueryBuilder(IAndOr<T, TQuery, ConnectionOptions<TDbConnection>> queryBuilder, uint start, uint? length)
             : base(queryBuilder, start, length)
         { }
 
-        public LimitQueryBuilder(IQueryBuilder<TQuery, ConnectionOptions<TDbConnection>> queryBuilder, int start, int? length) : base(queryBuilder, start, length)
+        public LimitQueryBuilder(IQueryBuilder<TQuery, ConnectionOptions<TDbConnection>> queryBuilder, uint start, uint? length) : base(queryBuilder, start, length)
         { }
 
         public override LimitQuery<T, TDbConnection> Build()

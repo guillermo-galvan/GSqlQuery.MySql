@@ -19,7 +19,7 @@ namespace GSqlQuery.MySql.Test
         }
 
         [Fact]
-        public void Create_MySqlConnectionOptions_With_formats_and_sqlServerDatabaseManagement()
+        public void Create_MySqlConnectionOptions_With_formats_and_MySqlDatabaseManagementt()
         {
             var mySqlConnectionOptions = new MySqlConnectionOptions(new MySqlFormats(), new MySqlDatabaseManagement(Helper.GetConnectionString()));
             Assert.NotNull(mySqlConnectionOptions);

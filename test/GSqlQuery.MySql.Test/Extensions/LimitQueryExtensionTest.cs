@@ -122,7 +122,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_by_select_and_where()
+        public async Task Limit_executeasync_by_select_and_where()
         {
             var result = await Address.Select(_connectionOptions).Where().IsNotNull(x => x.AddressId).Limit(0, 5).Build().ExecuteAsync();
             Assert.NotNull(result);
@@ -131,7 +131,7 @@ namespace GSqlQuery.MySql.Test.Extensions
 
 
         [Fact]
-        public async void Limit_executeasync_by_select_and_orderby()
+        public async Task Limit_executeasync_by_select_and_orderby()
         {
             var result = await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync();
             Assert.NotNull(result);
@@ -149,7 +149,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_token_by_select_and_where()
+        public async Task Limit_executeasync_with_token_by_select_and_where()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -159,7 +159,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_token_by_select_and_orderby()
+        public async Task Limit_executeasync_with_token_by_select_and_orderby()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -169,7 +169,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Throw_exeception_when_cancel_token()
+        public async Task Throw_exeception_when_cancel_token()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -189,7 +189,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_connection_by_select_and_where()
+        public async Task Limit_executeasync_with_connection_by_select_and_where()
         {
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
@@ -200,7 +200,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_connection_by_select_and_orderby()
+        public async Task Limit_executeasync_with_connection_by_select_and_orderby()
         {
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
@@ -230,7 +230,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_connection_and_token_by_select_and_where()
+        public async Task Limit_executeasync_with_connection_and_token_by_select_and_where()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -243,7 +243,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_with_connection_and_token_by_select_and_orderby()
+        public async Task Limit_executeasync_with_connection_and_token_by_select_and_orderby()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -256,7 +256,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Throw_exeception_with_connection_and_cancel_token()
+        public async Task Throw_exeception_with_connection_and_cancel_token()
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
@@ -284,7 +284,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_two_Join_with_whereAsync()
+        public async Task Limit_executeasync_in_two_Join_with_whereAsync()
         {
             var result = await Actor.Select(_connectionOptions)
                                       .InnerJoin<Film_Actor>()
@@ -299,7 +299,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_two__Join()
+        public async Task Limit_executeasync_in_two__Join()
         {
             var result = await Address.Select(_connectionOptions)
                                       .InnerJoin<City>()
@@ -312,7 +312,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_three_Join_with_where()
+        public async Task Limit_executeasync_in_three_Join_with_where()
         {
             var result = await Actor.Select(_connectionOptions)
                                       .InnerJoin<Film_Actor>()
@@ -329,7 +329,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
-        public async void Limit_executeasync_in_three__Join()
+        public async Task Limit_executeasync_in_three__Join()
         {
             var result = await Address.Select(_connectionOptions)
                                       .InnerJoin<City>()
