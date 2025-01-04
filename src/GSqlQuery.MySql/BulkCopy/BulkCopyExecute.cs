@@ -9,17 +9,11 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql.BulkCopy
 {
-    internal class BulkCopyExecute : IMySqlBulkCopyExecute
+    internal class BulkCopyExecute(BulkCopyConfiguration bulkCopyConfiguration) : IMySqlBulkCopyExecute
     {
-        private readonly Queue<FileBulkLoader> _files;
+        private readonly Queue<FileBulkLoader> _files = new Queue<FileBulkLoader>();
         private bool _localInfileModify = false;
-        private readonly BulkCopyConfiguration _bulkCopyConfiguration;
-
-        public BulkCopyExecute(BulkCopyConfiguration bulkCopyConfiguration)
-        {
-            _bulkCopyConfiguration = bulkCopyConfiguration ?? throw new ArgumentNullException(nameof(bulkCopyConfiguration));
-            _files = new Queue<FileBulkLoader>();
-        }
+        private readonly BulkCopyConfiguration _bulkCopyConfiguration = bulkCopyConfiguration ?? throw new ArgumentNullException(nameof(bulkCopyConfiguration));
 
         public IMySqlBulkCopyExecute Copy<T>(IEnumerable<T> values)
         {
@@ -121,14 +115,14 @@ namespace GSqlQuery.MySql.BulkCopy
         {
             ClassOptions classOption = ClassOptionsFactory.GetClassOptions(typeof(T));
 
-            List<string> columns = new List<string>();
-            List<string> expressions = new List<string>();
+            List<string> columns = [];
+            List<string> expressions = [];
 
-            foreach (PropertyOptions property in classOption.PropertyOptions)
+            foreach (KeyValuePair<string, PropertyOptions> property in classOption.PropertyOptions)
             {
-                if (!property.ColumnAttribute.IsAutoIncrementing)
+                if (!property.Value.ColumnAttribute.IsAutoIncrementing)
                 {
-                    ColumnAndExpression columnsAndExpression = _bulkCopyConfiguration.Events.GetColumnaAndExpression(property);
+                    ColumnAndExpression columnsAndExpression = _bulkCopyConfiguration.Events.GetColumnaAndExpression(property.Value);
 
                     if (string.IsNullOrEmpty(columnsAndExpression.ColumnName))
                     {
@@ -151,11 +145,11 @@ namespace GSqlQuery.MySql.BulkCopy
                 {
                     Queue<object> fields = new Queue<object>();
 
-                    foreach (PropertyOptions property in classOption.PropertyOptions)
+                    foreach (KeyValuePair<string, PropertyOptions> property in classOption.PropertyOptions)
                     {
-                        if (!property.ColumnAttribute.IsAutoIncrementing)
+                        if (!property.Value.ColumnAttribute.IsAutoIncrementing)
                         {
-                            fields.Enqueue(_bulkCopyConfiguration.Events.Format(property, property.PropertyInfo.GetValue(item)));
+                            fields.Enqueue(_bulkCopyConfiguration.Events.Format(property.Value, property.Value.PropertyInfo.GetValue(item)));
                         }
                     }
                     sw.Write(string.Join(BulkCopyConfiguration.FIELDTERMINATOR, fields));
@@ -166,7 +160,7 @@ namespace GSqlQuery.MySql.BulkCopy
                 sw.Close();
             }
 
-            return new FileBulkLoader(TableAttributeExtension.GetTableName(classOption.Table, _bulkCopyConfiguration.Formats), path, columns, expressions);
+            return new FileBulkLoader(classOption.FormatTableName.GetTableName(_bulkCopyConfiguration.Formats), path, columns, expressions);
         }
 
         private void LocalInfileVerify(MySqlConnection connection, bool isValidation = true)

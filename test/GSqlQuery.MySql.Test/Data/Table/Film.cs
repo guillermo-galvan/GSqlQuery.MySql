@@ -15,7 +15,7 @@ namespace GSqlQuery.MySql.Test.Data.Table
         public string Description { get; set; }
 
         [Column("release_year", Size = 0)]
-        public string ReleaseYear { get; set; }
+        public int ReleaseYear { get; set; }
 
         [Column("language_id", Size = 3)]
         public byte LanguageId { get; set; }
@@ -47,7 +47,7 @@ namespace GSqlQuery.MySql.Test.Data.Table
         public Film()
         { }
 
-        public Film(long filmId, string title, string description, string releaseYear, byte languageId, byte? originalLanguageId, byte rentalDuration, decimal rentalRate, long? length, decimal replacementCost, string rating, string specialFeatures, DateTime lastUpdate)
+        public Film(long filmId, string title, string description, int releaseYear, byte languageId, byte? originalLanguageId, byte rentalDuration, decimal rentalRate, long? length, decimal replacementCost, string rating, string specialFeatures, DateTime lastUpdate)
         {
             FilmId = filmId;
             Title = title;

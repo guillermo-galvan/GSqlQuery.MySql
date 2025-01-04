@@ -24,7 +24,7 @@ namespace GSqlQuery.MySql.Benchmark.Query
         [IterationSetup]
         public virtual void InitializeTest()
         {
-            int count = Test2.Select(_connectionOptions, x => x.Id).Count().Build().Execute();
+            int count = Test2.Select(_connectionOptions, x => new { x.Id }).Count().Build().Execute();
             Console.WriteLine("Init Initialize test 2 {0}", count);
         }
     }

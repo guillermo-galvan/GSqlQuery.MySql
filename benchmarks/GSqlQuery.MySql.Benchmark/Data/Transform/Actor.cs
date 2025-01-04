@@ -1,5 +1,4 @@
 ﻿using GSqlQuery.MySql.Benchmark.Data.Table;
-using GSqlQuery.Runner;
 using System;
 using System.Collections.Generic;
 

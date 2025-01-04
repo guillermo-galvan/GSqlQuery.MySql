@@ -18,34 +18,6 @@ namespace GSqlQuery.MySql.Benchmark
             _serviceProvider = serviceProvider;
         }
 
-        public override IEnumerable<IDataParameter> GetParameter<T>(IEnumerable<ParameterDetail> parameters)
-        {
-            Queue<MySqlParameter> mySqlParameters = new();
-            IGetParameterTypes<T> getParameters;
-            try
-            {
-                getParameters = typeof(Actor) == typeof(T) ? (IGetParameterTypes<T>) new Actors() : _serviceProvider.GetService<IGetParameterTypes<T>>();
-            }
-            catch
-            {
-                getParameters = null;
-            }
-
-            if (getParameters == null)
-            {
-                throw new InvalidProgramException($"Interface to IGetParameters not found for type {typeof(T)}");
-            }
-
-            foreach (var param in parameters)
-            {
-                MySqlDbType mySqlDbType = getParameters.Types[param.PropertyOptions.PropertyInfo.Name];
-
-                mySqlParameters.Enqueue(new MySqlParameter(param.Name, mySqlDbType) { Value = param.Value });
-            }
-
-            return mySqlParameters;
-        }
-
         public override ITransformTo<T, TDbDataReader> GetTransformTo<T, TDbDataReader>(ClassOptions classOptions)
         {
             return typeof(Actor) == typeof(T) ? (ITransformTo<T, TDbDataReader>)new Data.Transform.Actors() : _serviceProvider.GetService<ITransformTo<T, TDbDataReader>>();

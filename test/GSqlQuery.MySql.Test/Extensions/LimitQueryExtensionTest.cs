@@ -18,6 +18,14 @@ namespace GSqlQuery.MySql.Test.Extensions
         }
 
         [Fact]
+        public void borrar_despues()
+        {
+            var connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEvents());
+            var result = Actor.Select(connectionOptions, x=> new {x.ActorId}).Build().Execute();
+            Assert.NotNull(result);
+        }
+
+        [Fact]
         public void Limit_by_select()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` LIMIT 0,5;";
@@ -41,7 +49,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void Limit_by_select_and_orderby()
         {
             var text = "SELECT `sakila`.`actor`.`actor_id`,`sakila`.`actor`.`first_name`,`sakila`.`actor`.`last_name`,`sakila`.`actor`.`last_update` FROM `sakila`.`actor` ORDER BY `sakila`.`actor`.`actor_id` ASC LIMIT 0,5;";
-            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build();
+            var result = Actor.Select(new QueryOptions(_connectionOptions.Formats)).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build();
             Assert.NotNull(result);
             Assert.Equal(text, result.Text);
         }
@@ -57,7 +65,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public void Limit_execute_by_select_and_where()
         {
-            var result = Actor.Select(_connectionOptions).Where().IsNotNull(x => x.ActorId).Limit(0, 5).Build().Execute();
+            var result = Actor.Select(_connectionOptions, x => new {x.LastName}).Where().IsNotNull(x => x.ActorId).Limit(0, 5).Build().Execute();
             Assert.NotNull(result);
             Assert.Equal(5, result.Count());
         }
@@ -66,7 +74,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public void Limit_execute_by_select_and_orderby()
         {
-            var result = Address.Select(_connectionOptions).OrderBy(x => x.AddressId, OrderBy.ASC).Limit(0, 5).Build().Execute();
+            var result = Address.Select(_connectionOptions).OrderBy(x => new { x.AddressId }, OrderBy.ASC).Limit(0, 5).Build().Execute();
             Assert.NotNull(result);
             Assert.Equal(5, result.Count());
         }
@@ -98,7 +106,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                var result = Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().Execute(connection);
+                var result = Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().Execute(connection);
                 Assert.NotNull(result);
                 Assert.Equal(5, result.Count());
             }
@@ -109,7 +117,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             using (var connection = _connectionOptions.DatabaseManagement.GetConnection())
             {
-                Assert.Throws<ArgumentNullException>(() => Address.Select(_connectionOptions).OrderBy(x => x.AddressId, OrderBy.ASC).Limit(0, 5).Build().Execute(null));
+                Assert.Throws<ArgumentNullException>(() => Address.Select(_connectionOptions).OrderBy(x => new { x.AddressId }, OrderBy.ASC).Limit(0, 5).Build().Execute(null));
             }
         }
 
@@ -133,7 +141,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public async Task Limit_executeasync_by_select_and_orderby()
         {
-            var result = await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync();
+            var result = await Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync();
             Assert.NotNull(result);
             Assert.Equal(5, result.Count());
         }
@@ -163,7 +171,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
-            var result = await Address.Select(_connectionOptions).OrderBy(x => x.AddressId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(token);
+            var result = await Address.Select(_connectionOptions).OrderBy(x => new { x.AddressId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(token);
             Assert.NotNull(result);
             Assert.Equal(5, result.Count());
         }
@@ -174,7 +182,7 @@ namespace GSqlQuery.MySql.Test.Extensions
             CancellationTokenSource cancellationTokenSource = new CancellationTokenSource();
             CancellationToken token = cancellationTokenSource.Token;
             cancellationTokenSource.Cancel();
-            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(token));
+            await Assert.ThrowsAsync<OperationCanceledException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(token));
         }
 
         [Fact]
@@ -204,7 +212,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         {
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                var result = await Address.Select(_connectionOptions).OrderBy(x => x.AddressId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection);
+                var result = await Address.Select(_connectionOptions).OrderBy(x => new { x.AddressId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection);
                 Assert.NotNull(result);
                 Assert.Equal(5, result.Count());
             }
@@ -213,7 +221,7 @@ namespace GSqlQuery.MySql.Test.Extensions
         [Fact]
         public async Task Throw_exeception_when_connection_is_null_executeasync()
         {
-            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(null));
+            await Assert.ThrowsAsync<ArgumentNullException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(null));
         }
 
         [Fact]
@@ -249,7 +257,7 @@ namespace GSqlQuery.MySql.Test.Extensions
             CancellationToken token = cancellationTokenSource.Token;
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
-                var result = await Address.Select(_connectionOptions).OrderBy(x => x.AddressId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection, token);
+                var result = await Address.Select(_connectionOptions).OrderBy(x => new { x.AddressId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection, token);
                 Assert.NotNull(result);
                 Assert.Equal(5, result.Count());
             }
@@ -263,8 +271,8 @@ namespace GSqlQuery.MySql.Test.Extensions
             using (var connection = await _connectionOptions.DatabaseManagement.GetConnectionAsync())
             {
                 cancellationTokenSource.Cancel();
-                await Assert.ThrowsAsync<OperationCanceledException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection, token));
-                await Assert.ThrowsAsync<ArgumentNullException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => x.ActorId, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(null, token));
+                await Assert.ThrowsAsync<OperationCanceledException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(connection, token));
+                await Assert.ThrowsAsync<ArgumentNullException>(async () => await Actor.Select(_connectionOptions).OrderBy(x => new { x.ActorId }, OrderBy.ASC).Limit(0, 5).Build().ExecuteAsync(null, token));
             }
         }
 
