@@ -21,8 +21,20 @@ namespace GSqlQuery.MySql.Test.Extensions
         public void borrar_despues()
         {
             var connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEvents());
-            var result = Actor.Select(connectionOptions, x=> new {x.ActorId}).Build().Execute();
+            var result = Actor.Select(connectionOptions).Build().Execute();
             Assert.NotNull(result);
+
+            //var result = Actor.Select(_connectionOptions)
+            //                          .InnerJoin<Film_Actor>()
+            //                          .Equal(x => x.Table1.ActorId, x => x.Table2.ActorId)
+            //                          .InnerJoin<Film>()
+            //                          .Equal(x => x.Table2.FilmId, x => x.Table3.FilmId)
+            //                          .Where()
+            //                          .Equal(x => x.Table1.ActorId, 1)
+            //                          .Limit(0, 5)
+            //                          .Build().Execute();
+
+            //Assert.NotNull(result);
         }
 
         [Fact]

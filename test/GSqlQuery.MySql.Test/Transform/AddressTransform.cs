@@ -5,20 +5,24 @@ using MySql.Data.MySqlClient;
 using MySql.Data.Types;
 using System;
 using System.Collections.Generic;
-using System.Data;
 using System.Threading;
 using System.Threading.Tasks;
-using static Google.Protobuf.Reflection.SourceCodeInfo.Types;
 
 namespace GSqlQuery.MySql.Test.Transform
 {
-    public class AddressTransform() : ITransformTo<Address, MySqlDataReader>
+    public class AddressTransform : ITransformTo<Address, MySqlDataReader>
     {
+        private Address _address;
+
+        public AddressTransform()
+        {
+            _address = new Address();
+        }
+
         private struct AddressOrdinal
         {
             public AddressOrdinal()
-            {
-            }
+            {}
 
             public int AddressId { get; set; } = -1;
 
@@ -80,57 +84,6 @@ namespace GSqlQuery.MySql.Test.Transform
             }
 
             return result;
-        }
-
-        public Address CreateEntity(IEnumerable<PropertyValue> propertyValues)
-        {
-            long addressId = default;
-            string address1 = default;
-            string address2 = default;
-            string district = default;
-            long cityId = default;
-            string postalCode = default;
-            string phone = default;
-            MySqlGeometry location = default;
-            DateTime lastUpdate = default;
-
-            foreach (PropertyValue item in propertyValues)
-            {
-                switch (item.Property.PropertyInfo.Name)
-                {
-                    case nameof(Address.AddressId):
-                        addressId = (long)item.Value;
-                        break;
-                    case nameof(Address.Address1):
-                        address1 = (string)item.Value;
-                        break;
-                    case nameof(Address.Address2):
-                        address2 = (string)item.Value;
-                        break;
-                    case nameof(Address.District):
-                        district = (string)item.Value;
-                        break;
-                    case nameof(Address.CityId):
-                        cityId = (long)item.Value;
-                        break;
-                    case nameof(Address.PostalCode):
-                        postalCode = (string)item.Value;
-                        break;
-                    case nameof(Address.Phone):
-                        phone = (string)item.Value;
-                        break;
-                    case nameof(Address.Location):
-                        location = (MySqlGeometry)item.Value;
-                        break;
-                    case nameof(Address.LastUpdate):
-                        lastUpdate = (DateTime)item.Value;
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return new Address(addressId, address1, address2, district, cityId, postalCode, phone, location, lastUpdate);
         }
 
         public IEnumerable<Address> Transform(PropertyOptionsCollection propertyOptions, IQuery<Address> query, MySqlDataReader reader, DatabaseManagementEvents events)
@@ -251,6 +204,49 @@ namespace GSqlQuery.MySql.Test.Transform
                 result.Add(new Address(addressId, address1, address2, district, cityId, postalCode, phone, location, lastUpdate));
             }
 
+            return result;
+        }
+
+        public void SetValue(PropertyOptions property, object value)
+        {
+            switch (property.PropertyInfo.Name)
+            {
+                case nameof(Address.AddressId):
+                    _address.AddressId = (long)value;
+                    break;
+                case nameof(Address.Address1):
+                    _address.Address1 = (string)value;
+                    break;
+                case nameof(Address.Address2):
+                    _address.Address2 = (string)value;
+                    break;
+                case nameof(Address.District):
+                    _address.District = (string)value;
+                    break;
+                case nameof(Address.CityId):
+                    _address.CityId = (long)value;
+                    break;
+                case nameof(Address.PostalCode):
+                    _address.PostalCode = (string)value;
+                    break;
+                case nameof(Address.Phone):
+                    _address.Phone = (string)value;
+                    break;
+                case nameof(Address.Location):
+                    _address.Location = (MySqlGeometry)value;
+                    break;
+                case nameof(Address.LastUpdate):
+                    _address.LastUpdate = (DateTime)value;
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        public Address GetEntity()
+        {
+            Address result = _address;
+            _address = new Address();
             return result;
         }
     }

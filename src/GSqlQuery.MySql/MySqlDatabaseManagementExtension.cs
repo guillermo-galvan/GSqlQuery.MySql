@@ -26,9 +26,9 @@ namespace GSqlQuery.MySql
 
         public static async Task<TResult> ExecuteWithTransactionAsync<TResult>(this IExecute<TResult, MySqlDatabaseConnection> query, CancellationToken cancellationToken = default)
         {
-            using (MySqlDatabaseConnection connection = await query.DatabaseManagement.GetConnectionAsync(cancellationToken))
+            using (MySqlDatabaseConnection connection = await query.DatabaseManagement.GetConnectionAsync(cancellationToken).ConfigureAwait(false))
             {
-                using (MySqlDatabaseTransaction transaction = await connection.BeginTransactionAsync(cancellationToken))
+                using (MySqlDatabaseTransaction transaction = await connection.BeginTransactionAsync(cancellationToken).ConfigureAwait(false))
                 {
                     TResult result = await query.ExecuteAsync(transaction.Connection, cancellationToken);
                     await transaction.CommitAsync(cancellationToken);

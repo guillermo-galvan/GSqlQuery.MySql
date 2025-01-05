@@ -34,7 +34,7 @@ namespace GSqlQuery.MySql
 
             if (databaseConnection.State != ConnectionState.Open)
             {
-                await databaseConnection.OpenAsync(cancellationToken);
+                await databaseConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return databaseConnection;
