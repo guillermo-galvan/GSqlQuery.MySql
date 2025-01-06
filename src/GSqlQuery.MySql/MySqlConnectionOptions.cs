@@ -6,7 +6,7 @@
             base(new MySqlFormats(), new MySqlDatabaseManagement(connectionString))
         { }
 
-        public MySqlConnectionOptions(string connectionString, DatabaseManagementEvents events) :
+        public MySqlConnectionOptions(string connectionString, MySqlDatabaseManagementEvents events) :
             base(new MySqlFormats(), new MySqlDatabaseManagement(connectionString, events))
         { }
 

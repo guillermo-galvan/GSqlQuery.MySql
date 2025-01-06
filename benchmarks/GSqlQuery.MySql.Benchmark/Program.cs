@@ -22,6 +22,7 @@ namespace GSqlQuery.MySql.Benchmark
 
         public static void Main(string[] args)
         {
+
             // _serviceCollection = new ServiceCollection()
             // .AddScoped<ITransformTo<Actor, MySqlDataReader>, Data.Transform.Actors>()
             // .AddScoped<IGetParameterTypes<Actor>, Actors>()
@@ -30,10 +31,11 @@ namespace GSqlQuery.MySql.Benchmark
             // _connectionOptionsServicesProvider = CreateTable.GetConnectionOptions(_serviceCollection);
             // _ids = Enumerable.Range(0, 250).Select(x => (long)x);
 
+            // //CreateTable.Create();
             // var a = CreateTable.GetConnectionString();
             // Console.WriteLine(a);
 
-            // var v = Actor.Select(_connectionOptionsServicesProvider, x => new { x.ActorId, x.FirstName }).Build().Execute();
+            // var v = Actor.Select(_connectionOptions, x => new { x.ActorId }).Count().Build().Execute();
 
             // Console.WriteLine(v);
 

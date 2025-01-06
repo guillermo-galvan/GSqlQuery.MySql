@@ -8,8 +8,8 @@ using MySql.Data.MySqlClient;
 
 namespace GSqlQuery.MySql.Benchmark.Query
 {
-    [SimpleJob(RuntimeMoniker.Net80, baseline: true)]
-    [SimpleJob(RuntimeMoniker.Net70)]
+    [SimpleJob(RuntimeMoniker.Net90, baseline: true)]
+    [SimpleJob(RuntimeMoniker.Net80)]
     [SimpleJob(RuntimeMoniker.Net462)]
     [MinColumn, MaxColumn, MeanColumn, MedianColumn]
     public abstract class BenchmarkBase

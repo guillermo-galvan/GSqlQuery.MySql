@@ -12,7 +12,7 @@ namespace GSqlQuery.MySql.Benchmark.Query
         public SelectBenchmark()
         {
             CreateTable.Create();
-            int count = Actor.Select(_connectionOptions, x => x.ActorId).Count().Build().Execute();
+            int count = Actor.Select(_connectionOptions, x => new { x.ActorId }).Count().Build().Execute();
             Console.WriteLine("Init Initialize {1} 2 {0}", count, typeof(Actor));
         } 
     }
@@ -50,7 +50,7 @@ namespace GSqlQuery.MySql.Benchmark.Query
         [Benchmark]
         public int Select_Many_Columns_true()
         {
-            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new {x.ActorId, x.FirstName}).Build() : 
+            var query = IsServicesProvider ? Actor.Select(_connectionOptionsServicesProvider, x => new { x.ActorId, x.FirstName }).Build() :
                                              Actor.Select(_connectionOptions, x => new { x.ActorId, x.FirstName }).Build();
             var result = query.Execute();
             return result.Count();

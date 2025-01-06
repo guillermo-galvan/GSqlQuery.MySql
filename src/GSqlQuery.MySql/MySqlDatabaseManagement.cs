@@ -6,15 +6,13 @@ using System.Threading.Tasks;
 
 namespace GSqlQuery.MySql
 {
-    public class MySqlDatabaseManagement :
-        DatabaseManagement<MySqlDatabaseConnection, MySqlDatabaseTransaction, MySqlCommand, MySqlTransaction, MySqlDataReader>, 
-        IDatabaseManagement<MySqlDatabaseConnection>
+    public class MySqlDatabaseManagement : DatabaseManagement<MySqlDatabaseConnection, MySqlDatabaseTransaction, MySqlCommand, MySqlTransaction, MySqlDataReader>, IDatabaseManagement<MySqlDatabaseConnection>
     {
         public MySqlDatabaseManagement(string connectionString) :
             base(connectionString, new MySqlDatabaseManagementEvents())
         { }
 
-        public MySqlDatabaseManagement(string connectionString, DatabaseManagementEvents events) : base(connectionString, events)
+        public MySqlDatabaseManagement(string connectionString, MySqlDatabaseManagementEvents events) : base(connectionString, events)
         { }
 
         public override MySqlDatabaseConnection GetConnection()
@@ -36,7 +34,7 @@ namespace GSqlQuery.MySql
 
             if (databaseConnection.State != ConnectionState.Open)
             {
-                await databaseConnection.OpenAsync(cancellationToken);
+                await databaseConnection.OpenAsync(cancellationToken).ConfigureAwait(false);
             }
 
             return databaseConnection;
