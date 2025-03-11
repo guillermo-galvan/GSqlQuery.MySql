@@ -1,5 +1,4 @@
-﻿using GSqlQuery.MySql.Test.Data;
-using GSqlQuery.MySql.Test.Data.Table;
+﻿using GSqlQuery.MySql.Test.Data.Table;
 using MySql.Data.Types;
 using System;
 using System.Threading;
@@ -8,14 +7,14 @@ using Xunit;
 
 namespace GSqlQuery.MySql.Test
 {
+    [Collection("GlobalTestServer")]
     public class MySqlDatabaseManagementExtensionTest
     {
         private readonly MySqlConnectionOptions _connectionOptions;
 
         public MySqlDatabaseManagementExtensionTest()
         {
-            Helper.CreateDatatable();
-            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(GlobalFixture.CONNECTIONSTRING, new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]
