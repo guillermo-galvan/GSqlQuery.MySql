@@ -4,13 +4,14 @@ using Xunit;
 
 namespace GSqlQuery.MySql.Test
 {
+    [Collection("GlobalTestServer")]
     public class MySqlDatabaseManagementEventsTest
     {
         private readonly MySqlConnectionOptions _connectionOptions;
 
         public MySqlDatabaseManagementEventsTest()
         {
-            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(GlobalFixture.CONNECTIONSTRING, new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]

@@ -7,20 +7,20 @@ using Xunit;
 
 namespace GSqlQuery.MySql.Test.Extensions
 {
+    [Collection("GlobalTestServer")]
     public class LimitQueryExtensionTest
     {
         private readonly MySqlConnectionOptions _connectionOptions;
 
         public LimitQueryExtensionTest()
         {
-            Helper.CreateDatatable();
-            _connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEventsCustom());
+            _connectionOptions = new MySqlConnectionOptions(GlobalFixture.CONNECTIONSTRING, new MySqlDatabaseManagementEventsCustom());
         }
 
         [Fact]
         public void borrar_despues()
         {
-            var connectionOptions = new MySqlConnectionOptions(Helper.GetConnectionString(), new MySqlDatabaseManagementEvents());
+            var connectionOptions = new MySqlConnectionOptions(GlobalFixture.CONNECTIONSTRING, new MySqlDatabaseManagementEvents());
             var result = Actor.Select(connectionOptions).Build().Execute();
             Assert.NotNull(result);
 
