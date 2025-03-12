@@ -7,7 +7,7 @@ Una biblioteca para ejecutar las consultas generadas por [GSqlQuery](https://git
 GSqlQuery.MySql se puede instalar utilizando el administrador de [paquetes Nuget](https://www.nuget.org/packages/GSqlQuery.MySql) o la `dotnet` CLI
 
 ```shell
-dotnet add package GSqlQuery.MySql --version 3.0.0-rc
+dotnet add package GSqlQuery.MySql --version 3.0.0
 ```
 
 [Revise nuestra documentación](./docs/es/Config.md) para obtener instrucciones sobre cómo utilizar el paquete.
